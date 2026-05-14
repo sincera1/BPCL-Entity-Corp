@@ -1,0 +1,26 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "b06f1474-8264-4ec4-93b8-2f642fa9dfd7",
+  "alias": "BpclEntityHomeWebPart",
+  "componentType": "WebPart",
+
+  
+  "version": "*",
+  "manifestVersion": 2,
+
+  
+  "requiresCustomScript": false,
+  "supportedHosts": ["SharePointWebPart", "TeamsPersonalApp", "TeamsTab", "SharePointFullPage"],
+  "supportsThemeVariants": true,
+
+  "preconfiguredEntries": [{
+    "groupId": "5c03119e-3074-46fd-976b-c60198311f70", 
+    "group": { "default": "Advanced" },
+    "title": { "default": "BPCL-Entity-Home" },
+    "description": { "default": "BPCL-Entity-Home description" },
+    "officeFabricIconFontName": "Page",
+    "properties": {
+      "description": "BPCL-Entity-Home"
+    }
+  }]
+}

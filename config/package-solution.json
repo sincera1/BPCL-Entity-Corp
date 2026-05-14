@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "bpcl-entity-home-client-side-solution",
+    "id": "93450ce9-dc1a-44e0-bddf-9fe3ca1a7045",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.21.1"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "bpcl-entity-home description"
+      },
+      "longDescription": {
+        "default": "bpcl-entity-home description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "bpcl-entity-home Feature",
+        "description": "The feature that activates elements of the bpcl-entity-home solution.",
+        "id": "f4e56fc1-07f6-464c-be48-246fb3a08d0f",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/bpcl-entity-home.sppkg"
+  }
+}
