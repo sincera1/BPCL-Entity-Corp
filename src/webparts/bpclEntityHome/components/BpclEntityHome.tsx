@@ -1757,7 +1757,7 @@ export default class EntityHome extends React.Component<
                 {/* Header */}
                 <div className={styles.missionHeader}>
                   <h4 className={styles.sectionHeading}>
-                    Mission, Vision & Values
+                   Vision, Mission,  & Values
                   </h4>
 
                   <div className={styles.topRightControls}>

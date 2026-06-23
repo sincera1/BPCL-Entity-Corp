@@ -1751,28 +1751,72 @@ Container .row {
   width: 100%;
   position: relative;
 }
-
 /* Track */
 .marqueeTrack {
   display: flex;
-  width: auto;
-  animation: scrollMarquee 25s linear infinite;
+  width: max-content;
+  animation: scrollMarquee linear infinite;
+  animation-duration: 120s; /* Default */
+}
+/* Desktop - 4 cards */
+.marqueeItem {
+  flex: 0 0 auto;
+  width: 300px;
+  padding: 0 8px;
+  box-sizing: border-box;
+}
+/* Laptop */
+@media (max-width: 1200px) {
+  .marqueeItem {
+    width: 260px;
+  }
+  .marqueeTrack {
+    animation-duration: 140s;
+  }
+}
+/* Tablet */
+@media (max-width: 992px) {
+  .marqueeItem {
+    width: 220px;
+  }
+  .marqueeTrack {
+    animation-duration: 140s;
+  }
+}
+/* Mobile */
+@media (max-width: 576px) {
+  .marqueeItem {
+    width: 180px;
+  }
+  .marqueeTrack {
+    animation-duration: 100s;
+  }
+}
+/* Infinite scrolling */
+@keyframes scrollMarquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translate(-50%);
+  }
 }
 
 /* ---------- RESPONSIVE CARD WIDTH ---------- */
 
 /* Large screens → 4 cards */
-.marqueeItem {
-  flex: 0 0 25%;
-  padding: 0 8px;
-  box-sizing: border-box;
-}
+// .marqueeItem {
+//   flex: 0 0 auto;
+//   width: 320px;
+//   padding: 0 8px;
+//   box-sizing: border-box;
+// }
 
 /* Medium screens → 3 cards */
 @media (max-width: 992px) {
-  .marqueeItem {
-    flex: 0 0 33.33%;
-  }
+  // .marqueeItem {
+  //   flex: 0 0 33.33%;
+  // }
 
   .quicklinksWrapper .prevBtn {
     left: 0px !important;
@@ -1785,9 +1829,9 @@ Container .row {
 
 /* Tablet → 2 cards */
 @media (max-width: 768px) {
-  .marqueeItem {
-    flex: 0 0 50%;
-  }
+  // .marqueeItem {
+  //   flex: 0 0 50%;
+  // }
 
   .quicklinksWrapper .prevBtn {
     left: 0px !important;
@@ -1800,14 +1844,14 @@ Container .row {
 
 /* Mobile → 1 card */
 @media (max-width: 576px) {
-  .marqueeItem {
-    flex: 0 0 100%;
-  }
+  // .marqueeItem {
+  //   flex: 0 0 100%;
+  // }
 
   /* slower animation for mobile (better UX) */
-  .marqueeTrack {
-    animation-duration: 40s;
-  }
+  // .marqueeTrack {
+  //   animation-duration: 40s;
+  // }
 
   .quicklinksWrapper .prevBtn {
     left: 0px !important;
@@ -1819,15 +1863,15 @@ Container .row {
 }
 
 /* Smooth continuous scroll */
-@keyframes scrollMarquee {
-  0% {
-    transform: translateX(0);
-  }
+// @keyframes scrollMarquee {
+//   0% {
+//     transform: translateX(0);
+//   }
 
-  100% {
-    transform: translateX(-50%);
-  }
-}
+//   100% {
+//     transform: translateX(-50%);
+//   }
+// }
 
 
 // Business unit ---------------

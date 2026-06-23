@@ -291,7 +291,8 @@ export default class BpclEntityHomeServices {
                 "RedirectURL",
                 "FileRef"
             )
-            .orderBy("Id", false)();
+            .orderBy("Id", false)
+            .top(15)();
 
         return items.map(item => ({
             Id: item.Id,
@@ -391,7 +392,9 @@ export default class BpclEntityHomeServices {
                 "FileRef",
                 "IsActive"
             )
-            .filter("IsActive eq 1")();
+            .filter("IsActive eq 1")
+            .orderBy("Id", false)
+            .top(15)();
 
         return items.map(item => {
             let imageUrl = "";
@@ -427,7 +430,9 @@ export default class BpclEntityHomeServices {
                 "FileRef",
                 "IsActive"
             )
-            .filter("IsActive eq 1")();
+            .filter("IsActive eq 1")
+            .orderBy("Id", false)
+            .top(15)();
 
         return items.map(item => {
             let imageUrl = "";
@@ -463,7 +468,9 @@ export default class BpclEntityHomeServices {
                 "FileRef",
                 "IsActive"
             )
-            .filter("IsActive eq 1")();
+            .filter("IsActive eq 1")
+            .orderBy("Id", false)
+            .top(15)();
 
         return items.map(item => {
             let imageUrl = "";
@@ -502,7 +509,8 @@ export default class BpclEntityHomeServices {
 
             )
             .filter("IsActive eq 1")
-            ();
+            .orderBy("Id", false)
+            .top(15)();
 
         return items.map(item => {
             let imageUrl = "";
@@ -538,7 +546,9 @@ export default class BpclEntityHomeServices {
                 "FileRef",
                 "IsActive"
             )
-            .filter("IsActive eq 1")();
+            .filter("IsActive eq 1")
+            .orderBy("Id", false)
+            .top(15)();
 
         return items.map(item => {
             let imageUrl = "";
@@ -1030,7 +1040,9 @@ export default class BpclEntityHomeServices {
                 "BUTitle",
                 "RedirectURL",
                 "FileRef"
-            )();
+            )
+            .orderBy("Id", false)
+            .top(15)();
 
         return items.map(item => ({
             Id: item.Id,
