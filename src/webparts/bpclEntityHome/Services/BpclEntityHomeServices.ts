@@ -601,18 +601,18 @@ export default class BpclEntityHomeServices {
 
     public async getBroadcasts(sbu?: string, category?: string): Promise<IBroadcastItem[]> {
 
-        
-    let filterQueryPart = "";
 
-    if (category === "Department") {
-        filterQueryPart = sbu ? ` and Department eq '${sbu}'` : "";
-    } else {
-        filterQueryPart = sbu
-            ? sbu === "HUMAN RESOURCES"
-                ? ` and (SBU eq 'HRD' or SBU eq 'HRS')`
-                : ` and SBU eq '${sbu}'`
-            : "";
-    }
+        let filterQueryPart = "";
+
+        if (category === "Department") {
+            filterQueryPart = sbu ? ` and Department eq '${sbu}'` : "";
+        } else {
+            filterQueryPart = sbu
+                ? sbu === "HUMAN RESOURCES"
+                    ? ` and (SBU eq 'HRD' or SBU eq 'HRS')`
+                    : ` and SBU eq '${sbu}'`
+                : "";
+        }
 
         const filterQuery =
             `Created ge datetime'2024-08-01T00:00:00Z' and CommunicationType eq 'BroadCast' and Status eq 'Published'` +
@@ -652,6 +652,8 @@ export default class BpclEntityHomeServices {
 
         for (const item of items) {
 
+            
+
             if (filteredItems.length === 15) break;
 
             if (!item.DLGroup || item.DLGroup.length === 0) {
@@ -685,7 +687,9 @@ export default class BpclEntityHomeServices {
             }
         }
 
+        
         return filteredItems
+
             .slice(0, 15)
             .map(item => ({
                 Id: item.Id,
@@ -693,12 +697,17 @@ export default class BpclEntityHomeServices {
                 PublishedDate: item.PublishedDate,
                 BroadcastType: {
                     Label: item.BroadcastType?.Label || "",
-                    TermGuid: item.BroadcastType?.TermGuid || ""
+                    TermGuid: (item as any).BroadcastType?.[0].TermGuid || ""
                 },
-                IconUrl: item.BroadcastType?.TermGuid
-                    ? iconMap.get(item.BroadcastType.TermGuid) || ""
+                IconUrl: (item as any).BroadcastType?.[0].TermGuid
+                    ? iconMap.get((item as any).BroadcastType?.[0].TermGuid) || ""
                     : ""
+                    
             }));
+
+        
+
+
     }
 
     private async getBroadcastIcons(): Promise<Map<string, string>> {
@@ -713,8 +722,10 @@ export default class BpclEntityHomeServices {
         const iconMap = new Map<string, string>();
 
         items.forEach(item => {
+
+
             if (item.BroadcastType?.TermGuid) {
-                iconMap.set(item.BroadcastType.TermGuid, item.FileRef);
+                iconMap.set(item.BroadcastType?.TermGuid, item.FileRef);
             }
         });
 
@@ -725,7 +736,7 @@ export default class BpclEntityHomeServices {
 
         const userGroups = await this.getUserGroups();
         const currentUserId = await this.getCurrentUserId();
-        
+
         let filterQueryPart = "";
 
         if (category === "Department") {
