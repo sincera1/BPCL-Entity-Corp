@@ -214,7 +214,8 @@ export default class BpclEntityHomeServices {
             )
             .expand("ParentId")
             .filter("IsActive eq 1")
-            .orderBy("Sequence", true)();
+            .orderBy("Sequence", true)
+            .top(500)();
 
         return items;
     }
@@ -615,7 +616,7 @@ export default class BpclEntityHomeServices {
         }
 
         const filterQuery =
-            `Created ge datetime'2024-08-01T00:00:00Z' and CommunicationType eq 'BroadCast' and Status eq 'Published'` +
+            `Created ge datetime'2025-01-01T00:00:00Z' and CommunicationType eq 'BroadCast' and Status eq 'Published'` +
             filterQueryPart;
 
         const userGroups = await this.getUserGroups();
@@ -637,7 +638,7 @@ export default class BpclEntityHomeServices {
                 .expand("DLGroup")
                 .filter(filterQuery)
                 .orderBy("PublishedDate", false)
-                .top(100)(),
+                .top(500)(),
 
             this.getBroadcastIcons()
         ]);
@@ -751,7 +752,7 @@ export default class BpclEntityHomeServices {
 
 
         const filterQuery =
-            `Created ge datetime'2024-08-01T00:00:00Z' and CommunicationType eq 'Event' and Status eq 'Published'` +
+            `Created ge datetime'2025-01-01T00:00:00Z' and CommunicationType eq 'Event' and Status eq 'Published'` +
             filterQueryPart;
 
         const items = await this.publishingHubSp.web.lists
@@ -770,7 +771,7 @@ export default class BpclEntityHomeServices {
             .expand("AttachmentFiles", "LikedBy", "DLGroup")
             .filter(filterQuery)
             .orderBy("PublishedDate", false)
-            .top(100)();
+            .top(500)();
 
         const filteredItems: any[] = [];
 
@@ -905,7 +906,7 @@ export default class BpclEntityHomeServices {
         }
 
         const filterQuery =
-            `Created ge datetime'2024-08-01T00:00:00Z' and CommunicationType eq 'News' and Status eq 'Published' and PublishIn eq 'Corporate'` +
+            `Created ge datetime'2025-01-01T00:00:00Z' and CommunicationType eq 'News' and Status eq 'Published' ` +
             filterQueryPart;
 
         const items = await this.publishingHubSp.web.lists
@@ -926,7 +927,7 @@ export default class BpclEntityHomeServices {
             .expand("AttachmentFiles", "LikedBy")
             .filter(filterQuery)
             .orderBy("PublishedDate", false)
-            .top(15)();
+            .top(500)();
 
         const currentUserId = await this.getCurrentUserId();
 
