@@ -638,7 +638,7 @@ export default class BpclEntityHomeServices {
                 .expand("DLGroup")
                 .filter(filterQuery)
                 .orderBy("PublishedDate", false)
-                .top(500)(),
+                .top(100)(),
 
             this.getBroadcastIcons()
         ]);
@@ -653,7 +653,7 @@ export default class BpclEntityHomeServices {
 
         for (const item of items) {
 
-            
+
 
             if (filteredItems.length === 15) break;
 
@@ -688,7 +688,7 @@ export default class BpclEntityHomeServices {
             }
         }
 
-        
+
         return filteredItems
 
             .slice(0, 15)
@@ -703,10 +703,10 @@ export default class BpclEntityHomeServices {
                 IconUrl: (item as any).BroadcastType?.[0].TermGuid
                     ? iconMap.get((item as any).BroadcastType?.[0].TermGuid) || ""
                     : ""
-                    
+
             }));
 
-        
+
 
 
     }
@@ -771,7 +771,7 @@ export default class BpclEntityHomeServices {
             .expand("AttachmentFiles", "LikedBy", "DLGroup")
             .filter(filterQuery)
             .orderBy("PublishedDate", false)
-            .top(500)();
+            .top(100)();
 
         const filteredItems: any[] = [];
 
@@ -892,7 +892,7 @@ export default class BpclEntityHomeServices {
         }
     }
 
-    public async getCorporateNews(sbu?: string, category?: string): Promise<ICorporateNewsItem[]> {
+  public async getCorporateNews(sbu?: string, category?: string): Promise<ICorporateNewsItem[]> {
         let filterQueryPart = "";
 
         if (category === "Department") {
@@ -927,7 +927,7 @@ export default class BpclEntityHomeServices {
             .expand("AttachmentFiles", "LikedBy")
             .filter(filterQuery)
             .orderBy("PublishedDate", false)
-            .top(500)();
+            .top(15)();
 
         const currentUserId = await this.getCurrentUserId();
 
