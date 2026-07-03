@@ -738,6 +738,8 @@ export default class EntityHome extends React.Component<
     submenu.style.visibility = "";
   };
 
+ 
+
 
 
   private renderSubMenus = (parentId: number): React.ReactNode => {
