@@ -90,6 +90,7 @@ Container .row {
   width: 100%;
 }
 
+
 /* ================================
    CONTAINER
 ================================ */
@@ -158,6 +159,12 @@ Container .row {
   min-width: 0;
 
 
+}
+
+.lastDropdown :global(.dropdown-menu) {
+  left: auto !important;
+  right: 0 !important;
+  // transform: none !important;
 }
 
 /* ================================
@@ -451,7 +458,7 @@ Container .row {
 }
 
 @media (max-width: 1366px) {
- 
+
   .firstRow .menuNav,
   .secondRow .menuNav {
     gap: 8px;
@@ -1751,13 +1758,16 @@ Container .row {
   width: 100%;
   position: relative;
 }
+
 /* Track */
 .marqueeTrack {
   display: flex;
   width: max-content;
   animation: scrollMarquee linear infinite;
-  animation-duration: 120s; /* Default */
+  animation-duration: 120s;
+  /* Default */
 }
+
 /* Desktop - 4 cards */
 .marqueeItem {
   flex: 0 0 auto;
@@ -1765,38 +1775,46 @@ Container .row {
   padding: 0 8px;
   box-sizing: border-box;
 }
+
 /* Laptop */
 @media (max-width: 1200px) {
   .marqueeItem {
     width: 260px;
   }
+
   .marqueeTrack {
     animation-duration: 140s;
   }
 }
+
 /* Tablet */
 @media (max-width: 992px) {
   .marqueeItem {
     width: 220px;
   }
+
   .marqueeTrack {
     animation-duration: 140s;
   }
 }
+
 /* Mobile */
 @media (max-width: 576px) {
   .marqueeItem {
     width: 180px;
   }
+
   .marqueeTrack {
     animation-duration: 100s;
   }
 }
+
 /* Infinite scrolling */
 @keyframes scrollMarquee {
   from {
     transform: translateX(0);
   }
+
   to {
     transform: translate(-50%);
   }
@@ -2144,29 +2162,29 @@ Container .row {
 
 
 
- 
- 
- 
-@media only screen and (min-width: 768px) and (max-width: 1180px)  {
- 
+
+
+
+@media only screen and (min-width: 768px) and (max-width: 1180px) {
+
   .customOutlinePills {
- 
+
     :global(.nav-link) {
       font-size: 10px;
       padding: 8px 4px;
     }
- 
+
   }
- 
- 
+
+
   .awardsBanner,
   .governanceBanner {
- 
+
     margin-top: 48px !important;
   }
- 
- 
- 
+
+
+
 }
 
 

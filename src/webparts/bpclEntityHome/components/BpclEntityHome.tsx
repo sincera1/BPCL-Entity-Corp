@@ -738,7 +738,7 @@ export default class EntityHome extends React.Component<
     submenu.style.visibility = "";
   };
 
- 
+
 
 
 
@@ -854,9 +854,10 @@ export default class EntityHome extends React.Component<
 
                 <Nav ref={this.menuContainerRef} className={styles.menuNav}>
 
-                  {this.state.visibleMenus.map(main => {
+                  {this.state.visibleMenus.map((main, index) => {
 
                     const children = this.getChildMenus(main.Id);
+                    const isLastMenu = index === this.state.visibleMenus.length - 1;
 
                     if (children.length === 0) {
                       return (
@@ -878,7 +879,7 @@ export default class EntityHome extends React.Component<
                         key={main.Id}
                         title={main.Title}
                         id={`nav-dropdown-${main.Id}`}
-                        className={styles.menuItem}
+                        className={`${styles.menuItem} ${isLastMenu ? styles.lastDropdown : ""}`}
                       >
                         {this.renderSubMenus(main.Id)}
                       </NavDropdown>
@@ -1759,7 +1760,7 @@ export default class EntityHome extends React.Component<
                 {/* Header */}
                 <div className={styles.missionHeader}>
                   <h4 className={styles.sectionHeading}>
-                   Vision, Mission,  & Values
+                    Vision, Mission,  & Values
                   </h4>
 
                   <div className={styles.topRightControls}>
