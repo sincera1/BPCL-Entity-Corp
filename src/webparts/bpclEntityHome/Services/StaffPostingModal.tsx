@@ -111,7 +111,7 @@ const orderedImages = useMemo(() => {
 
 }, [images, selectedIndex]);
   return (
-    <Modal show={show} onHide={onClose} size="lg" centered>
+    <Modal show={show} onHide={onClose} size="xl" centered>
       <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
