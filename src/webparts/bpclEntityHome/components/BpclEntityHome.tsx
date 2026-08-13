@@ -1440,7 +1440,7 @@ export default class EntityHome extends React.Component<
                   </div>
 
                   {this.state.corporateNews.length === 0 ? (
-                    <div className={styles.noDataWrapper}>
+                    <div className={styles.noDataWrapperNewsAnnouncements}>
                       <p className={styles.noDataText}>No data to display</p>
                     </div>
                   ) : (

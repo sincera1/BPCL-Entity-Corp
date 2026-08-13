@@ -1771,16 +1771,13 @@ Container .row {
 /* Desktop - 4 cards */
 .marqueeItem {
   flex: 0 0 auto;
-  width: 300px;
   padding: 0 8px;
   box-sizing: border-box;
 }
 
 /* Laptop */
 @media (max-width: 1200px) {
-  .marqueeItem {
-    width: 260px;
-  }
+  
 
   .marqueeTrack {
     animation-duration: 140s;
@@ -1789,9 +1786,7 @@ Container .row {
 
 /* Tablet */
 @media (max-width: 992px) {
-  .marqueeItem {
-    width: 220px;
-  }
+  
 
   .marqueeTrack {
     animation-duration: 140s;
@@ -1800,9 +1795,7 @@ Container .row {
 
 /* Mobile */
 @media (max-width: 576px) {
-  .marqueeItem {
-    width: 180px;
-  }
+  
 
   .marqueeTrack {
     animation-duration: 100s;
@@ -2619,11 +2612,20 @@ Container .row {
    Misc styles (unchanged)
    =============================== */
 
+.noDataWrapperNewsAnnouncements {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 427px;
+  background: #f8f9fa;
+  border-radius: 6px;
+}
+
 .noDataWrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 120px;
+  min-height: 160px;
   background: #f8f9fa;
   border-radius: 6px;
 }
