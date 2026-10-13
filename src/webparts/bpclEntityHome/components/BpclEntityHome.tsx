@@ -127,39 +127,96 @@ export default class EntityHome extends React.Component<
 
 
 
-  private async getSBUFromList(): Promise<{ value: string; category?: string } | null> {
-    try {
-      const currentFullUrl = window.location.href.toLowerCase();
+  // private async getSBUFromList(): Promise<{ value: string; category?: string } | null> {
+  //   try {
+  //     const currentFullUrl = window.location.href.toLowerCase();
 
-      const items: ITeamSiteMaster[] =
-        await this.entityHomeService.publishingHubSp.web.lists
-          .getByTitle("TeamSiteMaster")
-          .items
-          .select("TeamName", "Category", "SiteURL")();
+  //     const items: ITeamSiteMaster[] =
+  //       await this.entityHomeService.publishingHubSp.web.lists
+  //         .getByTitle("TeamSiteMaster")
+  //         .items
+  //         .select("TeamName", "Category", "SiteURL")();
 
-      for (let i = 0; i < items.length; i++) {
-        const siteUrl = items[i].SiteURL?.Url?.toLowerCase();
+  //     for (let i = 0; i < items.length; i++) {
+  //       const siteUrl = items[i].SiteURL?.Url?.toLowerCase();
 
-        if (!siteUrl) continue;
-
-
-        const normalizedSiteUrl = siteUrl.replace(/\/$/, "");
+  //       if (!siteUrl) continue;
 
 
-        if (currentFullUrl.startsWith(normalizedSiteUrl)) {
-          return {
-            value: items[i].TeamName,
-            category: items[i].Category
-          };
-        }
+  //       const normalizedSiteUrl = siteUrl.replace(/\/$/, "");
+
+
+  //       if (currentFullUrl.startsWith(normalizedSiteUrl)) {
+  //         return {
+  //           value: items[i].TeamName,
+  //           category: items[i].Category
+  //         };
+  //       }
+  //     }
+
+  //     return null;
+  //   } catch (error) {
+  //     console.error("Something went wrong. Please contact administrator.");
+  //     return null;
+  //   }
+  // }
+
+  
+private async getSBUFromList(): Promise<{ value: string; category?: string } | null> {
+  try {
+    const currentUrl = new URL(window.location.href);
+
+    const items: ITeamSiteMaster[] =
+      await this.entityHomeService.publishingHubSp.web.lists
+        .getByTitle("TeamSiteMaster")
+        .items
+        .select("TeamName", "Category", "SiteURL")();
+
+    // Match the most specific site URL first
+    const sortedItems = items
+      .filter(item => !!item.SiteURL?.Url)
+      .sort((a, b) => {
+        const urlA = new URL(a.SiteURL!.Url);
+        const urlB = new URL(b.SiteURL!.Url);
+        return urlB.pathname.length - urlA.pathname.length;
+      });
+
+    for (const item of sortedItems) {
+      const siteUrl = new URL(item.SiteURL!.Url);
+
+      const sitePath = siteUrl.pathname.replace(/\/+$/, "");
+      const currentPath = currentUrl.pathname.replace(/\/+$/, "");
+
+      // Match hostname and complete site path
+      const isMatchingSite =
+        currentUrl.origin.toLowerCase() === siteUrl.origin.toLowerCase() &&
+        (
+          currentPath.toLowerCase() === sitePath.toLowerCase() ||
+          currentPath.toLowerCase().startsWith(
+            sitePath.toLowerCase() + "/"
+          )
+        );
+
+      if (isMatchingSite) {
+        console.log("Matched TeamName:", item.TeamName);
+        console.log("Matched SiteURL:", item.SiteURL?.Url);
+
+        return {
+          value: item.TeamName,
+          category: item.Category
+        };
       }
-
-      return null;
-    } catch (error) {
-      console.error("Something went wrong. Please contact administrator.");
-      return null;
     }
+
+    console.warn("No matching TeamSiteMaster URL found:", currentUrl.href);
+    return null;
+
+  } catch (error) {
+    console.error("Error retrieving TeamSiteMaster:", error);
+    return null;
   }
+}
+
 
   private entityHomeService!: BpclEntityHomeServices;
   private userProfileService!: UserProfileService;

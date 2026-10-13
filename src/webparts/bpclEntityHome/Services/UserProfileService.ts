@@ -50,7 +50,7 @@ export default class UserProfileService {
     const allMatched: ITeamMember[] = [];
 
     let requestUrl =
-      "/users?$top=50&$select=displayName,mail,jobTitle,department,officeLocation,mobilePhone,onPremisesExtensionAttributes&$expand=manager($select=displayName)";
+      "/users?$top=100&$select=displayName,mail,jobTitle,department,officeLocation,mobilePhone,onPremisesExtensionAttributes&$expand=manager($select=displayName)";
 
     while (requestUrl) {
 

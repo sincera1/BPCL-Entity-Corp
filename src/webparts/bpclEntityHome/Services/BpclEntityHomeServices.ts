@@ -188,7 +188,7 @@ export default class BpclEntityHomeServices {
                 "https://bharatpetroleum.sharepoint.com/sites/qa-corporate-publishing-hub";
         } else {
             this.PUBLISHING_HUB_URL =
-                "https://bharatpetroleum.sharepoint.com/sites/iconnect-corporate-publishing-hub";
+                "https://bharatpetroleum.sharepoint.com/sites/iconnect-cph";
         }
 
         this.context = context;
@@ -201,62 +201,69 @@ export default class BpclEntityHomeServices {
 
 
     public async getNavigationMenu(): Promise<INavigationMenuItem[]> {
-        const items = await this.sp.web.lists
-            .getByTitle("Entity_SL_NavigationMenu")
-            .items
-            .select(
-                "Id",
-                "Title",
-                "MenuUrl",
-                "Sequence",
-                "ParentId/Id",
-                "ParentId/Title"
-            )
-            .expand("ParentId")
-            .filter("IsActive eq 1")
-            .orderBy("Sequence", true)
-            .top(500)();
 
-        return items;
+        
+            const items = await this.sp.web.lists
+                .getByTitle("Entity_SL_NavigationMenu")
+                .items
+                .select(
+                    "Id",
+                    "Title",
+                    "MenuUrl",
+                    "Sequence",
+                    "ParentId/Id",
+                    "ParentId/Title"
+                )
+                .expand("ParentId")
+                .filter("IsActive eq 1")
+                .orderBy("Sequence", true)
+                .top(500)();
+
+            return items;
+        
+
     }
 
 
     public async getQuickLinks(): Promise<IQuickLinkItem[]> {
-        const items = await this.sp.web.lists
-            .getByTitle("Entity_SL_QuickLinks")
-            .items
-            .select("Id", "Title", "DisplayOrder", "RedirectURL", "CoverImage")
-            .filter("IsActive eq 1")
-            .orderBy("DisplayOrder", true)();
+       
+            const items = await this.sp.web.lists
+                .getByTitle("Entity_SL_QuickLinks")
+                .items
+                .select("Id", "Title", "DisplayOrder", "RedirectURL", "CoverImage")
+                .filter("IsActive eq 1")
+                .orderBy("DisplayOrder", true)();
 
-        return items.map(item => {
-            let imageUrl: string | undefined;
+            return items.map(item => {
+                let imageUrl: string | undefined;
 
-            if (item.CoverImage) {
-                try {
-                    const img = JSON.parse(item.CoverImage);
+                if (item.CoverImage) {
+                    try {
+                        const img = JSON.parse(item.CoverImage);
 
 
-                    if (img.serverRelativeUrl) {
-                        imageUrl = img.serverRelativeUrl;
+                        if (img.serverRelativeUrl) {
+                            imageUrl = img.serverRelativeUrl;
+                        }
+
+                        else if (img.fileName) {
+                            imageUrl = `${this.siteUrl}/Lists/Entity_SL_QuickLinks/Attachments/${item.Id}/${img.fileName}`;
+                        }
+                    } catch {
+                        imageUrl = undefined;
                     }
-
-                    else if (img.fileName) {
-                        imageUrl = `${this.siteUrl}/Lists/Entity_SL_QuickLinks/Attachments/${item.Id}/${img.fileName}`;
-                    }
-                } catch {
-                    imageUrl = undefined;
                 }
-            }
 
-            return {
-                Id: item.Id,
-                Title: item.Title,
-                DisplayOrder: item.DisplayOrder,
-                RedirectURL: item.RedirectURL,
-                ImageUrl: imageUrl
-            };
-        });
+                return {
+                    Id: item.Id,
+                    Title: item.Title,
+                    DisplayOrder: item.DisplayOrder,
+                    RedirectURL: item.RedirectURL,
+                    ImageUrl: imageUrl
+                };
+            });
+
+       
     }
 
     private async getCurrentUserId(): Promise<number> {
@@ -280,28 +287,29 @@ export default class BpclEntityHomeServices {
 
     public async getWelcomeBanners(): Promise<IWelcomeBannerItem[]> {
 
+        
 
+            const items = await this.sp.web.lists
+                .getByTitle("Entity_DL_WelcomeBanner")
+                .items
+                .select(
+                    "Id",
+                    "WelcomeBannerTitle",
+                    "WelcomeBannerDesc",
+                    "RedirectURL",
+                    "FileRef"
+                )
+                .orderBy("Id", false)
+                .top(15)();
 
-        const items = await this.sp.web.lists
-            .getByTitle("Entity_DL_WelcomeBanner")
-            .items
-            .select(
-                "Id",
-                "WelcomeBannerTitle",
-                "WelcomeBannerDesc",
-                "RedirectURL",
-                "FileRef"
-            )
-            .orderBy("Id", false)
-            .top(15)();
-
-        return items.map(item => ({
-            Id: item.Id,
-            Title: item.WelcomeBannerTitle,
-            Description: item.WelcomeBannerDesc,
-            ImageUrl: encodeURI(item.FileRef),
-            RedirectURL: item.RedirectURL
-        }));
+            return items.map(item => ({
+                Id: item.Id,
+                Title: item.WelcomeBannerTitle,
+                Description: item.WelcomeBannerDesc,
+                ImageUrl: encodeURI(item.FileRef),
+                RedirectURL: item.RedirectURL
+            }));
+        
     }
 
     private getImageFromField(
@@ -330,247 +338,261 @@ export default class BpclEntityHomeServices {
 
     public async getDirectorCorner(): Promise<IDirectorCornerItem[]> {
 
-        const items = await this.sp.web.lists
-            .getByTitle("Entity_DirectorCorner")
-            .items
-            .select(
-                "Id",
-                "Title",
-                "Designation",
-                "Message",
-                "CoverImage",
-                "Image1",
-                "Image2",
-                "Image3",
-                "Image4",
-                "Image5",
-                "AttachmentFiles",
-                "IsActive"
-            )
-            .expand("AttachmentFiles")
-            .filter("IsActive eq 1")();
+        
 
-        return items.map(item => {
 
-            const attachments = item.AttachmentFiles || [];
+            const items = await this.sp.web.lists
+                .getByTitle("Entity_DirectorCorner")
+                .items
+                .select(
+                    "Id",
+                    "Title",
+                    "Designation",
+                    "Message",
+                    "CoverImage",
+                    "Image1",
+                    "Image2",
+                    "Image3",
+                    "Image4",
+                    "Image5",
+                    "AttachmentFiles",
+                    "IsActive"
+                )
+                .expand("AttachmentFiles")
+                .filter("IsActive eq 1")();
 
-            // 🔹 Cover image (normal view)
-            const coverImageUrl =
-                this.getImageFromField(item.CoverImage, attachments) || undefined;
+            return items.map(item => {
 
-            // 🔹 Gallery images (popup)
-            const galleryImages = [
-                item.CoverImage,
-                item.Image1,
-                item.Image2,
-                item.Image3,
-                item.Image4,
-                item.Image5
-            ]
-                .map(imgField => this.getImageFromField(imgField, attachments))
-                .filter((url): url is string => !!url); // remove nulls
+                const attachments = item.AttachmentFiles || [];
 
-            return {
-                Id: item.Id,
-                Title: item.Title,
-                Designation: item.Designation,
-                Message: item.Message,
-                ImageUrl: coverImageUrl,
-                GalleryImages: galleryImages
-            };
-        });
+                // 🔹 Cover image (normal view)
+                const coverImageUrl =
+                    this.getImageFromField(item.CoverImage, attachments) || undefined;
+
+                // 🔹 Gallery images (popup)
+                const galleryImages = [
+                    item.CoverImage,
+                    item.Image1,
+                    item.Image2,
+                    item.Image3,
+                    item.Image4,
+                    item.Image5
+                ]
+                    .map(imgField => this.getImageFromField(imgField, attachments))
+                    .filter((url): url is string => !!url); // remove nulls
+
+                return {
+                    Id: item.Id,
+                    Title: item.Title,
+                    Designation: item.Designation,
+                    Message: item.Message,
+                    ImageUrl: coverImageUrl,
+                    GalleryImages: galleryImages
+                };
+            });
+        
     }
 
     public async getPerformanceHighlights(): Promise<IHighlightItem[]> {
-        const items = await this.sp.web.lists
-            .getByTitle("Entity_DL_PerformanceHighlights")
-            .items
-            .select(
-                "Id",
-                "PerformanceHighlightsTitle",
-                "PerformanceHighlightsDesc",
-                "CoverImage",
-                "FileRef",
-                "IsActive"
-            )
-            .filter("IsActive eq 1")
-            .orderBy("Id", false)
-            .top(15)();
+        
+            const items = await this.sp.web.lists
+                .getByTitle("Entity_DL_PerformanceHighlights")
+                .items
+                .select(
+                    "Id",
+                    "PerformanceHighlightsTitle",
+                    "PerformanceHighlightsDesc",
+                    "CoverImage",
+                    "FileRef",
+                    "IsActive"
+                )
+                .filter("IsActive eq 1")
+                .orderBy("Id", false)
+                .top(15)();
 
-        return items.map(item => {
-            let imageUrl = "";
+            return items.map(item => {
+                let imageUrl = "";
 
-            if (item.CoverImage) {
-                try {
-                    const img = JSON.parse(item.CoverImage);
-                    imageUrl = img.serverRelativeUrl || "";
-                } catch (error) {
-                    console.error("Something went wrong. Please contact administrator.");
+                if (item.CoverImage) {
+                    try {
+                        const img = JSON.parse(item.CoverImage);
+                        imageUrl = img.serverRelativeUrl || "";
+                    } catch (error) {
+                        console.error("Something went wrong. Please contact administrator.");
+                    }
                 }
-            }
 
-            return {
-                Id: item.Id,
-                Title: item.PerformanceHighlightsTitle,
-                Description: item.PerformanceHighlightsDesc,
-                ImageUrl: imageUrl,
-                RedirectURL: item.FileRef
-            };
-        });
+                return {
+                    Id: item.Id,
+                    Title: item.PerformanceHighlightsTitle,
+                    Description: item.PerformanceHighlightsDesc,
+                    ImageUrl: imageUrl,
+                    RedirectURL: item.FileRef
+                };
+            });
+        
     }
 
     public async getSuccessStories(): Promise<IHighlightItem[]> {
-        const items = await this.sp.web.lists
-            .getByTitle("Entity_DL_SuccessStories")
-            .items
-            .select(
-                "Id",
-                "SuccessStoriesTitle",
-                "SuccessStoriesDesc",
-                "CoverImage",
-                "FileRef",
-                "IsActive"
-            )
-            .filter("IsActive eq 1")
-            .orderBy("Id", false)
-            .top(15)();
+        
+            const items = await this.sp.web.lists
+                .getByTitle("Entity_DL_SuccessStories")
+                .items
+                .select(
+                    "Id",
+                    "SuccessStoriesTitle",
+                    "SuccessStoriesDesc",
+                    "CoverImage",
+                    "FileRef",
+                    "IsActive"
+                )
+                .filter("IsActive eq 1")
+                .orderBy("Id", false)
+                .top(15)();
 
-        return items.map(item => {
-            let imageUrl = "";
+            return items.map(item => {
+                let imageUrl = "";
 
-            if (item.CoverImage) {
-                try {
-                    const img = JSON.parse(item.CoverImage);
-                    imageUrl = img.serverRelativeUrl || "";
-                } catch (error) {
-                    console.error("Something went wrong. Please contact administrator.");
+                if (item.CoverImage) {
+                    try {
+                        const img = JSON.parse(item.CoverImage);
+                        imageUrl = img.serverRelativeUrl || "";
+                    } catch (error) {
+                        console.error("Something went wrong. Please contact administrator.");
+                    }
                 }
-            }
 
-            return {
-                Id: item.Id,
-                Title: item.SuccessStoriesTitle,
-                Description: item.SuccessStoriesDesc,
-                ImageUrl: imageUrl,
-                RedirectURL: item.FileRef
-            };
-        });
+                return {
+                    Id: item.Id,
+                    Title: item.SuccessStoriesTitle,
+                    Description: item.SuccessStoriesDesc,
+                    ImageUrl: imageUrl,
+                    RedirectURL: item.FileRef
+                };
+            });
+        
     }
 
     public async getTestimonials(): Promise<IHighlightItem[]> {
-        const items = await this.sp.web.lists
-            .getByTitle("Entity_DL_Testimonials")
-            .items
-            .select(
-                "Id",
-                "TestimonialsTitle",
-                "TestimonialsDesc",
-                "CoverImage",
-                "FileRef",
-                "IsActive"
-            )
-            .filter("IsActive eq 1")
-            .orderBy("Id", false)
-            .top(15)();
+       
+            const items = await this.sp.web.lists
+                .getByTitle("Entity_DL_Testimonials")
+                .items
+                .select(
+                    "Id",
+                    "TestimonialsTitle",
+                    "TestimonialsDesc",
+                    "CoverImage",
+                    "FileRef",
+                    "IsActive"
+                )
+                .filter("IsActive eq 1")
+                .orderBy("Id", false)
+                .top(15)();
 
-        return items.map(item => {
-            let imageUrl = "";
+            return items.map(item => {
+                let imageUrl = "";
 
-            if (item.CoverImage) {
-                try {
-                    const img = JSON.parse(item.CoverImage);
-                    imageUrl = img.serverRelativeUrl || "";
-                } catch (error) {
-                    console.error("Something went wrong. Please contact administrator.");
+                if (item.CoverImage) {
+                    try {
+                        const img = JSON.parse(item.CoverImage);
+                        imageUrl = img.serverRelativeUrl || "";
+                    } catch (error) {
+                        console.error("Something went wrong. Please contact administrator.");
+                    }
                 }
-            }
 
-            return {
-                Id: item.Id,
-                Title: item.TestimonialsTitle,
-                Description: item.TestimonialsDesc,
-                ImageUrl: imageUrl,
-                RedirectURL: item.FileRef
-            };
-        });
+                return {
+                    Id: item.Id,
+                    Title: item.TestimonialsTitle,
+                    Description: item.TestimonialsDesc,
+                    ImageUrl: imageUrl,
+                    RedirectURL: item.FileRef
+                };
+            });
+       
     }
 
 
     public async getAwards(): Promise<IAwardItem[]> {
-        const items = await this.sp.web.lists
-            .getByTitle("Entity_DL_Awards")
-            .items
-            .select(
-                "Id",
-                "AwardsTitle",
-                "AwardsDesc",
-                "CoverImage",
-                "FileRef",
-                "IsActive"
+       
+            const items = await this.sp.web.lists
+                .getByTitle("Entity_DL_Awards")
+                .items
+                .select(
+                    "Id",
+                    "AwardsTitle",
+                    "AwardsDesc",
+                    "CoverImage",
+                    "FileRef",
+                    "IsActive"
 
-            )
-            .filter("IsActive eq 1")
-            .orderBy("Id", false)
-            .top(15)();
+                )
+                .filter("IsActive eq 1")
+                .orderBy("Id", false)
+                .top(15)();
 
-        return items.map(item => {
-            let imageUrl = "";
+            return items.map(item => {
+                let imageUrl = "";
 
-            if (item.CoverImage) {
-                try {
-                    const img = JSON.parse(item.CoverImage);
-                    imageUrl = img.serverRelativeUrl || "";
-                } catch {
-                    imageUrl = "";
+                if (item.CoverImage) {
+                    try {
+                        const img = JSON.parse(item.CoverImage);
+                        imageUrl = img.serverRelativeUrl || "";
+                    } catch {
+                        imageUrl = "";
+                    }
                 }
-            }
 
-            return {
-                Id: item.Id,
-                Title: item.AwardsTitle,
-                Description: item.AwardsDesc,
-                ImageUrl: imageUrl,
-                RedirectURL: item.FileRef
-            };
-        });
+                return {
+                    Id: item.Id,
+                    Title: item.AwardsTitle,
+                    Description: item.AwardsDesc,
+                    ImageUrl: imageUrl,
+                    RedirectURL: item.FileRef
+                };
+            });
+        
     }
 
     public async getGovernanceCarousel(): Promise<IGovernanceItem[]> {
-        const items = await this.sp.web.lists
-            .getByTitle("Entity_DL_GovernanceCarousel")
-            .items
-            .select(
-                "Id",
-                "GovernanceTitle",
-                "GovernanceDesc",
-                "CoverImage",
-                "FileRef",
-                "IsActive"
-            )
-            .filter("IsActive eq 1")
-            .orderBy("Id", false)
-            .top(15)();
+        
+            const items = await this.sp.web.lists
+                .getByTitle("Entity_DL_GovernanceCarousel")
+                .items
+                .select(
+                    "Id",
+                    "GovernanceTitle",
+                    "GovernanceDesc",
+                    "CoverImage",
+                    "FileRef",
+                    "IsActive"
+                )
+                .filter("IsActive eq 1")
+                .orderBy("Id", false)
+                .top(15)();
 
-        return items.map(item => {
-            let imageUrl = "";
+            return items.map(item => {
+                let imageUrl = "";
 
-            if (item.CoverImage) {
-                try {
-                    const img = JSON.parse(item.CoverImage);
-                    imageUrl = img.serverRelativeUrl || "";
-                } catch {
-                    imageUrl = "";
+                if (item.CoverImage) {
+                    try {
+                        const img = JSON.parse(item.CoverImage);
+                        imageUrl = img.serverRelativeUrl || "";
+                    } catch {
+                        imageUrl = "";
+                    }
                 }
-            }
 
-            return {
-                Id: item.Id,
-                Title: item.GovernanceTitle,
-                Description: item.GovernanceDesc,
-                ImageUrl: imageUrl,
-                RedirectURL: item.FileRef
-            };
-        });
+                return {
+                    Id: item.Id,
+                    Title: item.GovernanceTitle,
+                    Description: item.GovernanceDesc,
+                    ImageUrl: imageUrl,
+                    RedirectURL: item.FileRef
+                };
+            });
+        
     }
 
     private async getUserGroups(): Promise<Set<string>> {
@@ -601,347 +623,222 @@ export default class BpclEntityHomeServices {
     }
 
     public async getBroadcasts(sbu?: string, category?: string): Promise<IBroadcastItem[]> {
+        
 
+            let filterQueryPart = "";
 
-        let filterQueryPart = "";
-
-        if (category === "Department") {
-            filterQueryPart = sbu ? ` and Department eq '${sbu}'` : "";
-        } else {
-            filterQueryPart = sbu
-                ? sbu === "HUMAN RESOURCES"
-                    ? ` and (SBU eq 'HRD' or SBU eq 'HRS')`
-                    : ` and SBU eq '${sbu}'`
-                : "";
-        }
-
-        const filterQuery =
-            `Created ge datetime'2025-01-01T00:00:00Z' and CommunicationType eq 'BroadCast' and Status eq 'Published'` +
-            filterQueryPart;
-
-        const userGroups = await this.getUserGroups();
-        const currentUserId = await this.getCurrentUserId();
-        const [items, iconMap] = await Promise.all([
-
-            this.publishingHubSp.web.lists
-                .getByTitle("CorpCommunication")
-                .items
-                .select(
-                    "Id",
-                    "Title",
-                    "PublishedDate",
-                    "BroadcastType/Label",
-                    "BroadcastType/TermGuid",
-                    "DLGroup/Id",
-                    "DLGroup/Title"
-                )
-                .expand("DLGroup")
-                .filter(filterQuery)
-                .orderBy("PublishedDate", false)
-                .top(100)(),
-
-            this.getBroadcastIcons()
-        ]);
-
-        const filteredItems: {
-            Id: number;
-            Title: string;
-            PublishedDate: string;
-            BroadcastType?: { Label?: string; TermGuid?: string };
-            DLGroup?: { Title?: string }[];
-        }[] = [];
-
-        for (const item of items) {
-
-
-
-            if (filteredItems.length === 15) break;
-
-            if (!item.DLGroup || item.DLGroup.length === 0) {
-                filteredItems.push(item);
-                continue;
+            if (category === "Department") {
+                filterQueryPart = sbu ? ` and Department eq '${sbu}'` : "";
+            } else {
+                filterQueryPart = sbu
+                    ? sbu === "HUMAN RESOURCES"
+                        ? ` and (SBU eq 'HRD' or SBU eq 'HRS')`
+                        : ` and SBU eq '${sbu}'`
+                    : "";
             }
 
-            let hasAccess = false;
+            const filterQuery =
+                `Created ge datetime'2025-01-01T00:00:00Z' and CommunicationType eq 'BroadCast' and Status eq 'Published'` +
+                filterQueryPart;
 
-            const dlGroups = Array.isArray(item.DLGroup) ? item.DLGroup : [item.DLGroup];
+            const userGroups = await this.getUserGroups();
+            const currentUserId = await this.getCurrentUserId();
+            const [items, iconMap] = await Promise.all([
 
-            for (const dl of dlGroups) {
+                this.publishingHubSp.web.lists
+                    .getByTitle("CorpCommunication")
+                    .items
+                    .select(
+                        "Id",
+                        "Title",
+                        "PublishedDate",
+                        "BroadcastType/Label",
+                        "BroadcastType/TermGuid",
+                        "DLGroup/Id",
+                        "DLGroup/Title"
+                    )
+                    .expand("DLGroup")
+                    .filter(filterQuery)
+                    .orderBy("PublishedDate", false)
+                    .top(100)(),
 
-                if (!dl) continue;
+                this.getBroadcastIcons()
+            ]);
 
-                // ✅ 1. Direct user check
-                if (dl.Id === currentUserId) {
-                    hasAccess = true;
-                    break;
+            const filteredItems: {
+                Id: number;
+                Title: string;
+                PublishedDate: string;
+                BroadcastType?: { Label?: string; TermGuid?: string };
+                DLGroup?: { Title?: string }[];
+            }[] = [];
+
+            for (const item of items) {
+
+
+
+                if (filteredItems.length === 15) break;
+
+                if (!item.DLGroup || item.DLGroup.length === 0) {
+                    filteredItems.push(item);
+                    continue;
                 }
 
-                // ✅ 2. Group check
-                if (dl.Title && userGroups.has(dl.Title)) {
-                    hasAccess = true;
-                    break;
+                let hasAccess = false;
+
+                const dlGroups = Array.isArray(item.DLGroup) ? item.DLGroup : [item.DLGroup];
+
+                for (const dl of dlGroups) {
+
+                    if (!dl) continue;
+
+                    // ✅ 1. Direct user check
+                    if (dl.Id === currentUserId) {
+                        hasAccess = true;
+                        break;
+                    }
+
+                    // ✅ 2. Group check
+                    if (dl.Title && userGroups.has(dl.Title)) {
+                        hasAccess = true;
+                        break;
+                    }
+                }
+
+                if (hasAccess) {
+                    filteredItems.push(item);
                 }
             }
 
-            if (hasAccess) {
-                filteredItems.push(item);
-            }
-        }
 
+            return filteredItems
 
-        return filteredItems
+                .slice(0, 15)
+                .map(item => ({
+                    Id: item.Id,
+                    Title: item.Title,
+                    PublishedDate: item.PublishedDate,
+                    BroadcastType: {
+                        Label: item.BroadcastType?.Label || "",
+                        TermGuid: item.BroadcastType?.TermGuid || ""
+                    },
+                    IconUrl: item.BroadcastType?.TermGuid
+                        ? iconMap.get(item.BroadcastType.TermGuid) || ""
+                        : ""
 
-            .slice(0, 15)
-            .map(item => ({
-                Id: item.Id,
-                Title: item.Title,
-                PublishedDate: item.PublishedDate,
-                BroadcastType: {
-                    Label: item.BroadcastType?.Label || "",
-                    TermGuid: (item as any).BroadcastType?.[0].TermGuid || ""
-                },
-                IconUrl: (item as any).BroadcastType?.[0].TermGuid
-                    ? iconMap.get((item as any).BroadcastType?.[0].TermGuid) || ""
-                    : ""
+                }));
 
-            }));
-
-
+        
 
 
     }
 
     private async getBroadcastIcons(): Promise<Map<string, string>> {
+        
+            const items = await this.publishingHubSp.web.lists
+                .getByTitle("BroadCastIcons")
+                .items
+                .select(
+                    "FileRef",
+                    "BroadcastType/TermGuid"
+                )();
+            const iconMap = new Map<string, string>();
 
-        const items = await this.publishingHubSp.web.lists
-            .getByTitle("BroadCastIcons")
-            .items
-            .select(
-                "FileRef",
-                "BroadcastType/TermGuid"
-            )();
-        const iconMap = new Map<string, string>();
-
-        items.forEach(item => {
+            items.forEach(item => {
 
 
-            if (item.BroadcastType?.TermGuid) {
-                iconMap.set(item.BroadcastType?.TermGuid, item.FileRef);
-            }
-        });
+                if (item.BroadcastType?.TermGuid) {
+                    iconMap.set(item.BroadcastType?.TermGuid, item.FileRef);
+                }
+            });
 
-        return iconMap;
+            return iconMap;
+        
     }
 
     public async getEvents(sbu?: string, category?: string): Promise<ICorporateNewsItem[]> {
+        
+            const userGroups = await this.getUserGroups();
+            const currentUserId = await this.getCurrentUserId();
 
-        const userGroups = await this.getUserGroups();
-        const currentUserId = await this.getCurrentUserId();
+            let filterQueryPart = "";
 
-        let filterQueryPart = "";
-
-        if (category === "Department") {
-            filterQueryPart = sbu ? ` and Department eq '${sbu}'` : "";
-        } else {
-            filterQueryPart = sbu
-                ? sbu === "HUMAN RESOURCES"
-                    ? ` and (SBU eq 'HRD' or SBU eq 'HRS')`
-                    : ` and SBU eq '${sbu}'`
-                : "";
-        }
-
-
-        const filterQuery =
-            `Created ge datetime'2025-01-01T00:00:00Z' and CommunicationType eq 'Event' and Status eq 'Published'` +
-            filterQueryPart;
-
-        const items = await this.publishingHubSp.web.lists
-            .getByTitle("CorpCommunication")
-            .items.select(
-                "Id",
-                "Title",
-                "PublishedDate",
-                "LikesCount",
-                "LikedBy/Id",
-                "AttachmentFiles",
-                "ThumbnailCaption",
-                "DLGroup/Id",
-                "DLGroup/Title"
-            )
-            .expand("AttachmentFiles", "LikedBy", "DLGroup")
-            .filter(filterQuery)
-            .orderBy("PublishedDate", false)
-            .top(100)();
-
-        const filteredItems: any[] = [];
-
-        for (const item of items) {
-
-            if (filteredItems.length === 15) break;
-
-            // ✅ Public (no DLGroup)
-            if (!item.DLGroup || item.DLGroup.length === 0) {
-                filteredItems.push(item);
-                continue;
+            if (category === "Department") {
+                filterQueryPart = sbu ? ` and Department eq '${sbu}'` : "";
+            } else {
+                filterQueryPart = sbu
+                    ? sbu === "HUMAN RESOURCES"
+                        ? ` and (SBU eq 'HRD' or SBU eq 'HRS')`
+                        : ` and SBU eq '${sbu}'`
+                    : "";
             }
 
-            let hasAccess = false;
 
-            const dlGroups = Array.isArray(item.DLGroup)
-                ? item.DLGroup
-                : item.DLGroup
-                    ? [item.DLGroup]
-                    : [];
+            const filterQuery =
+                `Created ge datetime'2025-01-01T00:00:00Z' and CommunicationType eq 'Event' and Status eq 'Published'` +
+                filterQueryPart;
 
-            for (const dl of dlGroups) {
-
-                if (!dl) continue;
-
-                // ✅ Direct user
-                if (dl.Id === currentUserId) {
-                    hasAccess = true;
-                    break;
-                }
-
-                // ✅ Group membership
-                if (dl.Title && userGroups.has(dl.Title)) {
-                    hasAccess = true;
-                    break;
-                }
-            }
-
-            if (hasAccess) {
-                filteredItems.push(item);
-            }
-        }
-
-        return filteredItems.map(item => {
-
-            const likedUsers = item.LikedBy
-                ? item.LikedBy.map((u: { Id: number }) => u.Id)
-                : [];
-
-            const isLiked = likedUsers.includes(currentUserId);
-
-            return {
-                Id: item.Id,
-                Title: item.Title,
-                PublishedDate: item.PublishedDate,
-                LikesCount: item.LikesCount ?? 0,
-                ImageUrl:
-                    item.AttachmentFiles && item.AttachmentFiles.length > 0
-                        ? item.AttachmentFiles[0].ServerRelativeUrl
-                        : "",
-                liked: isLiked,
-                ThumbnailCaption: item.ThumbnailCaption
-            };
-        });
-    }
-
-    public async toggleLike(
-        itemId: number,
-        isLiked: boolean
-    ): Promise<number> {
-
-        const currentUserId = await this.getCurrentUserId();
-
-        const list = this.publishingHubSp.web.lists.getByTitle("CorpCommunication");
-        const itemRef = list.items.getById(itemId);
-
-        const item = await itemRef
-            .select("LikedBy/Id")
-            .expand("LikedBy")();
-
-        let likedUsers: number[] = item.LikedBy
-            ? item.LikedBy.map((u: { Id: number }) => u.Id)
-            : [];
-
-        // Remove like
-        if (isLiked) {
-            likedUsers = likedUsers.filter(id => id !== currentUserId);
-        }
-        // Add like
-        else if (!likedUsers.includes(currentUserId)) {
-            likedUsers.push(currentUserId);
-        }
-
-        const updatedLikes = likedUsers.length;
-
-        await itemRef.update({
-            LikesCount: updatedLikes,
-            LikedById: likedUsers
-        });
-
-        return updatedLikes;
-    }
-
-    private async getTaxonomyLabelByWssId(wssId: number): Promise<string> {
-        if (!wssId) return "";
-
-        try {
             const items = await this.publishingHubSp.web.lists
-                .getByTitle("TaxonomyHiddenList")
-                .items
-                .filter(`ID eq ${wssId}`)
-                .select("Id", "Term")();
+                .getByTitle("CorpCommunication")
+                .items.select(
+                    "Id",
+                    "Title",
+                    "PublishedDate",
+                    "LikesCount",
+                    "LikedBy/Id",
+                    "AttachmentFiles",
+                    "ThumbnailCaption",
+                    "DLGroup/Id",
+                    "DLGroup/Title"
+                )
+                .expand("AttachmentFiles", "LikedBy", "DLGroup")
+                .filter(filterQuery)
+                .orderBy("PublishedDate", false)
+                .top(100)();
 
-            return items.length > 0 ? items[0].Title : "";
-        } catch (error) {
-            console.error("Something went wrong. Please contact administrator.");
-            return "";
-        }
-    }
+            const filteredItems: any[] = [];
 
-  public async getCorporateNews(sbu?: string, category?: string): Promise<ICorporateNewsItem[]> {
-        let filterQueryPart = "";
+            for (const item of items) {
 
-        if (category === "Department") {
-            filterQueryPart = sbu ? ` and Department eq '${sbu}'` : "";
-        } else {
-            filterQueryPart = sbu
-                ? sbu === "HUMAN RESOURCES"
-                    ? ` and (SBU eq 'HRD' or SBU eq 'HRS')`
-                    : ` and SBU eq '${sbu}'`
-                : "";
-        }
+                if (filteredItems.length === 15) break;
 
-        const filterQuery =
-            `Created ge datetime'2025-01-01T00:00:00Z' and CommunicationType eq 'News' and Status eq 'Published' ` +
-            filterQueryPart;
+                // ✅ Public (no DLGroup)
+                if (!item.DLGroup || item.DLGroup.length === 0) {
+                    filteredItems.push(item);
+                    continue;
+                }
 
-        const items = await this.publishingHubSp.web.lists
-            .getByTitle("CorpCommunication")
-            .items
-            .select(
-                "Id",
-                "Title",
-                "PublishedDate",
-                "LikesCount",
-                "Thumbnail",
-                "NewsTypes",
-                "NewsTypes/Label",
-                "LikedBy/Id",
+                let hasAccess = false;
 
-                "AttachmentFiles"
-            )
-            .expand("AttachmentFiles", "LikedBy")
-            .filter(filterQuery)
-            .orderBy("PublishedDate", false)
-            .top(15)();
+                const dlGroups = Array.isArray(item.DLGroup)
+                    ? item.DLGroup
+                    : item.DLGroup
+                        ? [item.DLGroup]
+                        : [];
 
-        const currentUserId = await this.getCurrentUserId();
+                for (const dl of dlGroups) {
 
-        const results = await Promise.all(
-            items.map(async (item) => {
+                    if (!dl) continue;
 
-                const imageRelativeUrl = this.getThumbnailFromAttachments(
-                    item.AttachmentFiles,
-                    item.Thumbnail
-                );
+                    // ✅ Direct user
+                    if (dl.Id === currentUserId) {
+                        hasAccess = true;
+                        break;
+                    }
 
-                const resolvedLabel = await this.getTaxonomyLabelByWssId(
-                    item.NewsTypes?.WssId
-                );
+                    // ✅ Group membership
+                    if (dl.Title && userGroups.has(dl.Title)) {
+                        hasAccess = true;
+                        break;
+                    }
+                }
+
+                if (hasAccess) {
+                    filteredItems.push(item);
+                }
+            }
+
+            return filteredItems.map(item => {
 
                 const likedUsers = item.LikedBy
                     ? item.LikedBy.map((u: { Id: number }) => u.Id)
@@ -953,15 +850,144 @@ export default class BpclEntityHomeServices {
                     Id: item.Id,
                     Title: item.Title,
                     PublishedDate: item.PublishedDate,
-                    LikesCount: item.LikesCount ? item.LikesCount : 0,
-                    ImageUrl: imageRelativeUrl,
+                    LikesCount: item.LikesCount ?? 0,
+                    ImageUrl:
+                        item.AttachmentFiles && item.AttachmentFiles.length > 0
+                            ? item.AttachmentFiles[0].ServerRelativeUrl
+                            : "",
                     liked: isLiked,
-                    newsType: resolvedLabel
+                    ThumbnailCaption: item.ThumbnailCaption
                 };
-            })
-        );
+            });
+        
+    }
 
-        return results;
+    public async toggleLike(
+        itemId: number,
+        isLiked: boolean
+    ): Promise<number> {
+       
+
+            const currentUserId = await this.getCurrentUserId();
+
+            const list = this.publishingHubSp.web.lists.getByTitle("CorpCommunication");
+            const itemRef = list.items.getById(itemId);
+
+            const item = await itemRef
+                .select("LikedBy/Id")
+                .expand("LikedBy")();
+
+            let likedUsers: number[] = item.LikedBy
+                ? item.LikedBy.map((u: { Id: number }) => u.Id)
+                : [];
+
+            // Remove like
+            if (isLiked) {
+                likedUsers = likedUsers.filter(id => id !== currentUserId);
+            }
+            // Add like
+            else if (!likedUsers.includes(currentUserId)) {
+                likedUsers.push(currentUserId);
+            }
+
+            const updatedLikes = likedUsers.length;
+
+            await itemRef.update({
+                LikesCount: updatedLikes,
+                LikedById: likedUsers
+            });
+
+            return updatedLikes;
+        
+    }
+
+    private async getTaxonomyLabelByWssId(wssId: number): Promise<string> {
+
+        if (!wssId) return "";
+
+       
+            const items = await this.publishingHubSp.web.lists
+                .getByTitle("TaxonomyHiddenList")
+                .items
+                .filter(`ID eq ${wssId}`)
+                .select("Id", "Term")();
+
+            return items.length > 0 ? items[0].Title : "";
+       
+    }
+
+    public async getCorporateNews(sbu?: string, category?: string): Promise<ICorporateNewsItem[]> {
+       
+            let filterQueryPart = "";
+
+            if (category === "Department") {
+                filterQueryPart = sbu ? ` and Department eq '${sbu}'` : "";
+            } else {
+                filterQueryPart = sbu
+                    ? sbu === "HUMAN RESOURCES"
+                        ? ` and (SBU eq 'HRD' or SBU eq 'HRS')`
+                        : ` and SBU eq '${sbu}'`
+                    : "";
+            }
+
+            const filterQuery =
+                `Created ge datetime'2025-01-01T00:00:00Z' and CommunicationType eq 'News' and Status eq 'Published' ` +
+                filterQueryPart;
+
+            const items = await this.publishingHubSp.web.lists
+                .getByTitle("CorpCommunication")
+                .items
+                .select(
+                    "Id",
+                    "Title",
+                    "PublishedDate",
+                    "LikesCount",
+                    "Thumbnail",
+                    "NewsTypes",
+                    "NewsTypes/Label",
+                    "LikedBy/Id",
+
+                    "AttachmentFiles"
+                )
+                .expand("AttachmentFiles", "LikedBy")
+                .filter(filterQuery)
+                .orderBy("PublishedDate", false)
+                .top(15)();
+
+            const currentUserId = await this.getCurrentUserId();
+
+            const results = await Promise.all(
+                items.map(async (item) => {
+
+                    const imageRelativeUrl = this.getThumbnailFromAttachments(
+                        item.AttachmentFiles,
+                        item.Thumbnail
+                    );
+
+                    const resolvedLabel = await this.getTaxonomyLabelByWssId(
+                        item.NewsTypes?.WssId
+                    );
+
+                    const likedUsers = item.LikedBy
+                        ? item.LikedBy.map((u: { Id: number }) => u.Id)
+                        : [];
+
+                    const isLiked = likedUsers.includes(currentUserId);
+
+                    return {
+                        Id: item.Id,
+                        Title: item.Title,
+                        PublishedDate: item.PublishedDate,
+                        LikesCount: item.LikesCount ? item.LikesCount : 0,
+                        ImageUrl: imageRelativeUrl,
+                        liked: isLiked,
+                        newsType: resolvedLabel
+                    };
+                })
+            );
+
+            return results;
+       
     }
 
 
@@ -991,55 +1017,59 @@ export default class BpclEntityHomeServices {
     }
 
     public async getContactUsSlides(): Promise<IBUContactUsItem[]> {
-        const items = await this.sp.web.lists
-            .getByTitle("Entity_DL_ContactUs")
-            .items.select(
-                "Id",
-                "ContactTitle",
-                "ContactDesc",
-                "RedirectURL",
-                "FileRef"
-            )();
+        
+            const items = await this.sp.web.lists
+                .getByTitle("Entity_DL_ContactUs")
+                .items.select(
+                    "Id",
+                    "ContactTitle",
+                    "ContactDesc",
+                    "RedirectURL",
+                    "FileRef"
+                )();
 
-        return items.map(item => ({
-            Id: item.Id,
-            ContactTitle: item.ContactTitle,
-            ContactDesc: item.ContactDesc,
-            RedirectURL: item.RedirectURL,
-            ImageUrl: item.FileRef
-        }));
+            return items.map(item => ({
+                Id: item.Id,
+                ContactTitle: item.ContactTitle,
+                ContactDesc: item.ContactDesc,
+                RedirectURL: item.RedirectURL,
+                ImageUrl: item.FileRef
+            }));
+       
     }
 
 
 
     public async getVisionMissionValues(): Promise<IVMVItem[]> {
-        const items = await this.sp.web.lists
-            .getByTitle("Entity_DL_VisionMissionValues")
-            .items
-            .select("Id", "VMVTitle", "VMVDesc", "CoverImage", "FileRef")();
+       
+            const items = await this.sp.web.lists
+                .getByTitle("Entity_DL_VisionMissionValues")
+                .items
+                .select("Id", "VMVTitle", "VMVDesc", "CoverImage", "FileRef")();
 
-        return items.map(item => {
-            let imageUrl: string | undefined;
+            return items.map(item => {
+                let imageUrl: string | undefined;
 
-            if (item.CoverImage) {
-                try {
-                    const img = JSON.parse(item.CoverImage);
-                    if (img.serverRelativeUrl) {
-                        imageUrl = img.serverRelativeUrl;
+                if (item.CoverImage) {
+                    try {
+                        const img = JSON.parse(item.CoverImage);
+                        if (img.serverRelativeUrl) {
+                            imageUrl = img.serverRelativeUrl;
+                        }
+                    } catch {
+                        imageUrl = undefined;
                     }
-                } catch {
-                    imageUrl = undefined;
                 }
-            }
 
-            return {
-                Id: item.Id,
-                Title: item.VMVTitle,
-                Description: item.VMVDesc,
-                ImageUrl: imageUrl,
-                RedirectURL: item.FileRef
-            };
-        });
+                return {
+                    Id: item.Id,
+                    Title: item.VMVTitle,
+                    Description: item.VMVDesc,
+                    ImageUrl: imageUrl,
+                    RedirectURL: item.FileRef
+                };
+            });
+        
     }
 
 
@@ -1065,19 +1095,16 @@ export default class BpclEntityHomeServices {
     }
 
     public async getAttachments(itemId: number): Promise<IAttachment[]> {
-        try {
+        
             return await this.publishingHubSp.web.lists
                 .getByTitle("CorpCommunication")
                 .items.getById(itemId)
                 .attachmentFiles();
-        } catch (error) {
-            console.error("Something went wrong. Please contact administrator.");
-            return [];
-        }
+        
     }
 
     public async getNewsPreviewItem(itemId: number): Promise<INewsPreviewItem | undefined> {
-        try {
+        
             const item = await this.publishingHubSp.web.lists
                 .getByTitle("CorpCommunication")
                 .items
@@ -1100,14 +1127,10 @@ export default class BpclEntityHomeServices {
                 )();
 
             return item;
-        } catch (error) {
-            console.error("Something went wrong. Please contact administrator.");
-            return undefined;
-        }
     }
 
     public async getEventPreviewItem(itemId: number): Promise<IEventPreviewItem | undefined> {
-        try {
+        
             const item = await this.publishingHubSp.web.lists
                 .getByTitle("CorpCommunication")
                 .items
@@ -1125,10 +1148,7 @@ export default class BpclEntityHomeServices {
                 )();
 
             return item;
-        } catch (error) {
-            console.error("Something went wrong. Please contact administrator.");
-            return undefined;
-        }
+       
     }
 
 
