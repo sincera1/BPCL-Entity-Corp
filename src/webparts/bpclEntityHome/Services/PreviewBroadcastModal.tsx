@@ -23,10 +23,10 @@ const PreviewBroadcastModal: React.FC<Props> = ({
   if (!item) return null;
 
   // Helpers
-  const isImage = (fileName: string):boolean  =>
+  const isImage = (fileName: string): boolean =>
     /\.(png|jpe?g|gif)$/i.test(fileName);
 
-  const isPdf = (fileName: string):boolean  =>
+  const isPdf = (fileName: string): boolean =>
     /\.pdf$/i.test(fileName);
 
   // Separate attachments
@@ -63,7 +63,7 @@ const PreviewBroadcastModal: React.FC<Props> = ({
 
         {/* Multiple Images → Carousel */}
         {imageAttachments.length > 1 && (
-          <Carousel  className={`mb-3 ${styles.modalCarousel}`}>
+          <Carousel className={`mb-3 ${styles.modalCarousel}`}>
             {imageAttachments.map((img, index) => (
               <Carousel.Item key={index}>
                 <img
@@ -89,8 +89,9 @@ const PreviewBroadcastModal: React.FC<Props> = ({
           {item.EventDate && (
             <p className="mb-3 text-muted">
               {new Date(item.EventDate).toLocaleDateString("en-GB", {
+                weekday: "long",
                 day: "2-digit",
-                month: "short",
+                month: "long",
                 year: "numeric",
               })}
             </p>

@@ -1,5 +1,5 @@
 import * as React from "react";
-import {  Carousel, Modal } from "react-bootstrap";
+import { Carousel, Modal } from "react-bootstrap";
 import "@fontsource/inter";
 import "@fontsource/inter/500.css";
 import "@fontsource/inter/600.css";
@@ -76,8 +76,8 @@ const PreviewNewsModal: React.FC<Props> = ({
 
       <Modal.Body className={`p-3 ${styles.modalBody}`}>
         {images.length > 0 && (
-          <Carousel 
-          className={styles.modalCarousel}
+          <Carousel
+            className={styles.modalCarousel}
             interval={3000}
             controls
             indicators={false}
@@ -133,11 +133,12 @@ const PreviewNewsModal: React.FC<Props> = ({
         <div className="p-1 mt-3">
           <p className="mb-2">
             {item.PublishedDate
-              ? new Date(item.PublishedDate).toLocaleDateString("en-IN", {
-                  day: "2-digit",
-                  month: "short",
-                  year: "numeric",
-                })
+              ? new Date(item.PublishedDate).toLocaleDateString("en-GB", {
+                weekday: "long",
+                day: "2-digit",
+                month: "long",
+                year: "numeric",
+              })
               : ""}
           </p>
 
