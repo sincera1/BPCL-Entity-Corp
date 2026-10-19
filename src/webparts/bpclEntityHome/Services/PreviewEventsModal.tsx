@@ -51,6 +51,7 @@ const PreviewEventsModal: React.FC<Props> = ({
       </Modal.Header>
 
       <Modal.Body className={`p-3 ${styles.modalBody}`}>
+     
         {/* Images */}
         {images.length > 0 && (
           <Carousel controls={false} indicators={false} pause="hover">
@@ -60,9 +61,19 @@ const PreviewEventsModal: React.FC<Props> = ({
                   src={img}
                   alt="Event"
                   className="d-block w-100"
+                  onClick={() => {
+                    if (item.RelatedSiteURL?.Url) {
+                      window.open(
+                        item.RelatedSiteURL.Url,
+                        "_blank",
+                        "noopener,noreferrer"
+                      );
+                    }
+                  }}
                   style={{
                     height: "auto",
                     objectFit: "contain",
+                    cursor: item.RelatedSiteURL?.Url ? "pointer" : "default",
                   }}
                 />
               </Carousel.Item>

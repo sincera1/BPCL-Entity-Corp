@@ -47,16 +47,28 @@ const PreviewBroadcastModal: React.FC<Props> = ({
       <Modal.Body className={`p-3 ${styles.modalBody}`}>
         {/* ================= IMAGES ================= */}
 
+        {/* ================= IMAGES ================= */}
+
+        {/* ================= IMAGES ================= */}
+
         {/* Single Image */}
         {imageAttachments.length === 1 && (
           <img
             src={imageAttachments[0].ServerRelativeUrl}
-            alt="Broadcast"
+            alt={imageAttachments[0].FileName}
+            onClick={() =>
+              window.open(
+                imageAttachments[0].ServerRelativeUrl,
+                "_blank",
+                "noopener,noreferrer"
+              )
+            }
             style={{
               width: "100%",
               height: "auto",
               objectFit: "cover",
               marginBottom: "16px",
+              cursor: "pointer",
             }}
           />
         )}
@@ -69,16 +81,25 @@ const PreviewBroadcastModal: React.FC<Props> = ({
                 <img
                   src={img.ServerRelativeUrl}
                   alt={img.FileName}
+                  onClick={() =>
+                    window.open(
+                      img.ServerRelativeUrl,
+                      "_blank",
+                      "noopener,noreferrer"
+                    )
+                  }
                   style={{
                     width: "100%",
                     height: "auto",
                     objectFit: "cover",
+                    cursor: "pointer",
                   }}
                 />
               </Carousel.Item>
             ))}
           </Carousel>
         )}
+
 
         {/* ================= TITLE ================= */}
         {/* <h5 className="mb-2">{item.Title}</h5> */}

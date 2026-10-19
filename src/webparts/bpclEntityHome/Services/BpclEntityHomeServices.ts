@@ -83,6 +83,10 @@ export interface IBroadcastItem {
         TermGuid: string;
     };
     IconUrl: string;
+     RelatedSiteURL?: {
+        Url: string;
+        Description: string;
+    };
 }
 
 export interface IAwardItem {
@@ -162,6 +166,10 @@ export interface IEventPreviewItem {
     Picture2?: string;
     Picture3?: string;
     ThumbnailCaption?: string;
+     RelatedSiteURL?: {
+        Url: string;
+        Description: string;
+    };
 }
 
 
@@ -652,6 +660,7 @@ export default class BpclEntityHomeServices {
                         "Id",
                         "Title",
                         "PublishedDate",
+                        "RelatedSiteURL",
                         "BroadcastType/Label",
                         "BroadcastType/TermGuid",
                         "DLGroup/Id",
@@ -669,6 +678,10 @@ export default class BpclEntityHomeServices {
                 Id: number;
                 Title: string;
                 PublishedDate: string;
+                RelatedSiteURL?: {
+                Url: string;
+                Description: string;
+            };
                 BroadcastType?: { Label?: string; TermGuid?: string };
                 DLGroup?: { Title?: string }[];
             }[] = [];
@@ -718,6 +731,7 @@ export default class BpclEntityHomeServices {
                     Id: item.Id,
                     Title: item.Title,
                     PublishedDate: item.PublishedDate,
+                    RelatedSiteURL: item.RelatedSiteURL,
                     BroadcastType: {
                         Label: item.BroadcastType?.Label || "",
                         TermGuid: item.BroadcastType?.TermGuid || ""
@@ -1144,7 +1158,8 @@ export default class BpclEntityHomeServices {
                     "Picture1",
                     "Picture2",
                     "Picture3",
-                    "ThumbnailCaption"
+                    "ThumbnailCaption",
+                    "RelatedSiteURL"
                 )();
 
             return item;
