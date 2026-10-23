@@ -64,7 +64,7 @@ const PreviewNewsModal: React.FC<Props> = ({
     <Modal
       show={show}
       onHide={onClose}
-      size="xl"
+      size="lg"
       centered
       style={{ zIndex: 9999 }}
     >

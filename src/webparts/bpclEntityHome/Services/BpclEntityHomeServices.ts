@@ -915,20 +915,20 @@ export default class BpclEntityHomeServices {
         
     }
 
-    private async getTaxonomyLabelByWssId(wssId: number): Promise<string> {
+    // private async getTaxonomyLabelByWssId(wssId: number): Promise<string> {
 
-        if (!wssId) return "";
+    //     if (!wssId) return "";
 
        
-            const items = await this.publishingHubSp.web.lists
-                .getByTitle("TaxonomyHiddenList")
-                .items
-                .filter(`ID eq ${wssId}`)
-                .select("Id", "Term")();
+    //         const items = await this.publishingHubSp.web.lists
+    //             .getByTitle("TaxonomyHiddenList")
+    //             .items
+    //             .filter(`ID eq ${wssId}`)
+    //             .select("Id", "Term")();
 
-            return items.length > 0 ? items[0].Title : "";
+    //         return items.length > 0 ? items[0].Title : "";
        
-    }
+    // }
 
     public async getCorporateNews(sbu?: string, category?: string): Promise<ICorporateNewsItem[]> {
        
@@ -978,9 +978,9 @@ export default class BpclEntityHomeServices {
                         item.Thumbnail
                     );
 
-                    const resolvedLabel = await this.getTaxonomyLabelByWssId(
-                        item.NewsTypes?.WssId
-                    );
+                    // const resolvedLabel = await this.getTaxonomyLabelByWssId(
+                    //     item.NewsTypes?.WssId
+                    // );
 
                     const likedUsers = item.LikedBy
                         ? item.LikedBy.map((u: { Id: number }) => u.Id)
@@ -995,7 +995,11 @@ export default class BpclEntityHomeServices {
                         LikesCount: item.LikesCount ? item.LikesCount : 0,
                         ImageUrl: imageRelativeUrl,
                         liked: isLiked,
-                        newsType: resolvedLabel
+                        NewsTypes: {
+                        WssId: item.NewsTypes?.WssId,
+                        TermGuid: item.NewsTypes?.TermGuid,
+                        Label: item.NewsTypes?.Label
+                    }
                     };
                 })
             );

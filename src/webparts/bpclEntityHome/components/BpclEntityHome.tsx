@@ -587,7 +587,7 @@ export default class EntityHome extends React.Component<
     try {
 
       // If Staff Posting → no need to fetch preview + attachments
-      if (item.NewsTypes?.WssId === 24) {
+      if (item.NewsTypes?.TermGuid === "51ab6bdd-d1a1-46ea-8b1f-2cf59a46ea67") {
         this.setState({
           showNewsPreview: true,
           selectedNewsItem: item,
@@ -1974,7 +1974,7 @@ export default class EntityHome extends React.Component<
           />
 
           {this.state.selectedNewsItem &&
-            this.state.selectedNewsItem.NewsTypes?.WssId === 24 ? (
+            this.state.selectedNewsItem.NewsTypes?.TermGuid === "51ab6bdd-d1a1-46ea-8b1f-2cf59a46ea67" ? (
             <StaffPostingModal
               show={this.state.showNewsPreview}
               onClose={this.closeNewsPreview}
