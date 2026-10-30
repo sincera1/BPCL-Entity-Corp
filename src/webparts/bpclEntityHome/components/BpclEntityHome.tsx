@@ -109,6 +109,8 @@ interface IComponentState {
   visibleMenus: INavigationMenuItem[];
   showOverflowMenus: boolean;
 
+  openDropdownId: number | null;
+
 }
 
 
@@ -221,7 +223,7 @@ export default class EntityHome extends React.Component<
   private userProfileService!: UserProfileService;
   private staffPostingService!: StaffPostingService;
   private menuContainerRef = React.createRef<HTMLDivElement>();
-  private resizeHandler!: () => void;
+
 
   private getTopLevelMenus = (): INavigationMenuItem[] => {
     return this.state.navigationMenu
@@ -389,7 +391,8 @@ export default class EntityHome extends React.Component<
       //Navigation Menus
       visibleMenus: [],
       overflowMenus: [],
-      showOverflowMenus: false
+      showOverflowMenus: false,
+      openDropdownId: null
 
 
 
@@ -420,71 +423,212 @@ export default class EntityHome extends React.Component<
     this.splitMenus();
   };
 
+  private handleParentDropdownToggle = (
+    menuId: number,
+    isOpen: boolean
+  ): void => {
+    this.setState(prevState => {
+      if (isOpen) {
+        return { openDropdownId: menuId };
+      }
+
+      // Ignore a close event from an older dropdown
+      // if another dropdown is already active.
+      if (prevState.openDropdownId !== menuId) {
+        return null;
+      }
+
+      return { openDropdownId: null };
+    });
+  };
+
 
 
   public async componentDidMount(): Promise<void> {
-
-
-    this.entityHomeService = new BpclEntityHomeServices(this.props.context);
-    this.userProfileService = new UserProfileService(this.props.context);
-    this.staffPostingService = new StaffPostingService(
-
-      this.entityHomeService.publishingHubSp,
-
+    this.entityHomeService = new BpclEntityHomeServices(
       this.props.context
-
     );
 
+    this.userProfileService = new UserProfileService(
+      this.props.context
+    );
 
-    window.addEventListener("resize", this.resizeHandler);
-    const result = await this.getSBUFromList();
+    this.staffPostingService = new StaffPostingService(
+      this.entityHomeService.publishingHubSp,
+      this.props.context
+    );
 
-    const sbu = result?.value || "INFORMATION SYSTEMS";
-    const category = result?.category || "";
+    document.addEventListener("click", this.handleDocumentClick);
+    window.addEventListener("resize", this.handleResize);
+
+
 
     try {
-      const [navigationMenu, quickLinks, welcomeBanners, directorCorner, businessUnits, vmvItems, corporateNews, events, broadcasts, awards, contactUsSlides, governanceItems, performanceHighlights, successStories, testimonials] = await Promise.all([
+      const result = await this.getSBUFromList();
+
+      const sbu = result?.value || "INFORMATION SYSTEMS";
+      const category = result?.category || "";
+
+      // ==========================================
+      // PHASE 1: INITIAL SECTIONS
+      // ==========================================
+      const phase1Start = performance.now();
+
+      const [
+        navigationMenu,
+        quickLinks,
+        welcomeBanners,
+        directorCorner
+      ] = await Promise.all([
         this.entityHomeService.getNavigationMenu(),
         this.entityHomeService.getQuickLinks(),
         this.entityHomeService.getWelcomeBanners(),
-        this.entityHomeService.getDirectorCorner(),
-        this.entityHomeService.getBusinessUnits(),
-        this.entityHomeService.getVisionMissionValues(),
-        this.entityHomeService.getCorporateNews(sbu, category),
-        this.entityHomeService.getEvents(sbu, category),
-        this.entityHomeService.getBroadcasts(sbu, category),
-        this.entityHomeService.getAwards(),
-        this.entityHomeService.getContactUsSlides(),
-        this.entityHomeService.getGovernanceCarousel(),
-        this.entityHomeService.getPerformanceHighlights(),
-        this.entityHomeService.getSuccessStories(),
-        this.entityHomeService.getTestimonials()
-
-
+        this.entityHomeService.getDirectorCorner()
       ]);
 
       const topLevelMenus = navigationMenu
         .filter(m => !m.ParentId)
-        .sort((a, b) => (a.Sequence ?? 0) - (b.Sequence ?? 0));
+        .sort(
+          (a, b) => (a.Sequence ?? 0) - (b.Sequence ?? 0)
+        );
 
-      this.setState({
-        sbu, category, navigationMenu, visibleMenus: topLevelMenus, quickLinks, welcomeBanners, directorCorner, businessUnits, vmvItems, corporateNews, events, broadcasts, awards, contactUsSlides, governanceItems, highlightsData: {
-          performanceHighlights, successStories, testimonials
-        }, isLoading: false
-      }, () => {
-        requestAnimationFrame(() => this.splitMenus());
-      });
+      this.setState(
+        {
+          sbu,
+          category,
+          navigationMenu,
+          visibleMenus: topLevelMenus,
+          quickLinks,
+          welcomeBanners,
+          directorCorner,
+          isLoading: false
+        },
+        () => {
+          requestAnimationFrame(() => {
+            this.splitMenus();
+            this.observeSBUTeamSection();
+          });
+        }
+      );
 
-      // 🔹 PHASE 2 – LOAD TEAM AFTER RENDER
-      requestAnimationFrame(() => {
-        this.observeSBUTeamSection();
-      });
+      console.log(
+        `Phase 1 load time: ${((performance.now() - phase1Start) / 1000).toFixed(2)
+        } seconds`
+      );
 
+      // ==========================================
+      // PHASE 2: BACKGROUND SECTIONS
+      // Each section updates independently.
+      // ==========================================
+      void this.loadRemainingSections(sbu, category);
 
 
     } catch (error) {
-      console.error("Something went wrong. Please contact administrator.");
+      console.error(
+        "Something went wrong. Please contact administrator."
+      );
     }
+  }
+
+  private async loadRemainingSections(
+    sbu: string,
+    category: string
+  ): Promise<void> {
+
+
+    const tasks: Promise<void>[] = [
+
+      this.entityHomeService.getPerformanceHighlights().then(
+        performanceHighlights => {
+          this.setState(prevState => ({
+            highlightsData: {
+              ...prevState.highlightsData,
+              performanceHighlights
+            }
+          }));
+        }
+      ),
+
+
+      this.entityHomeService.getAwards().then(awards => {
+        this.setState({ awards });
+      }),
+
+
+      this.entityHomeService.getGovernanceCarousel().then(
+        governanceItems => {
+          this.setState({ governanceItems });
+        }
+      ),
+
+
+      this.entityHomeService.getSuccessStories().then(
+        successStories => {
+          this.setState(prevState => ({
+            highlightsData: {
+              ...prevState.highlightsData,
+              successStories
+            }
+          }));
+        }
+      ),
+
+
+      this.entityHomeService.getTestimonials().then(
+        testimonials => {
+          this.setState(prevState => ({
+            highlightsData: {
+              ...prevState.highlightsData,
+              testimonials
+            }
+          }));
+        }
+      ),
+
+
+      this.entityHomeService.getCorporateNews(sbu, category).then(
+        corporateNews => {
+          this.setState({ corporateNews });
+        }
+      ),
+
+
+      this.entityHomeService.getBroadcasts(sbu, category).then(
+        broadcasts => {
+          this.setState({ broadcasts });
+        }
+      ),
+
+
+      this.entityHomeService.getEvents(sbu, category).then(
+        events => {
+          this.setState({ events });
+        }
+      ),
+
+
+      this.entityHomeService.getContactUsSlides().then(
+        contactUsSlides => {
+          this.setState({ contactUsSlides });
+        }
+      ),
+
+
+      this.entityHomeService.getVisionMissionValues().then(
+        vmvItems => {
+          this.setState({ vmvItems });
+        }
+      ),
+
+
+      this.entityHomeService.getBusinessUnits().then(
+        businessUnits => {
+          this.setState({ businessUnits });
+        }
+      )
+    ];
+
+    await Promise.all(tasks);
 
 
   }
@@ -765,35 +909,101 @@ export default class EntityHome extends React.Component<
 
 
   public componentWillUnmount(): void {
-    //window.removeEventListener('resize', this.handleResize);
-    // 🔹 cleanup team observer
-    window.removeEventListener("resize", this.handleResize);
+    window.removeEventListener('resize', this.handleResize);
+
     this.sbuTeamObserver?.disconnect();
+    document.removeEventListener("click", this.handleDocumentClick);
   }
 
-  private handleSubmenuPosition = (e: React.MouseEvent<HTMLDivElement>): void => {
-
+  private handleSubmenuPosition = (
+    e: React.MouseEvent<HTMLDivElement>
+  ): void => {
     const el = e.currentTarget as HTMLElement;
-    const submenu = el.querySelector('.dropdown-menu') as HTMLElement;
+    const submenu = el.querySelector(
+      ":scope > .dropdown-menu"
+    ) as HTMLElement | null;
 
     if (!submenu) return;
+
+    // Temporarily display the submenu to measure its dimensions.
+    const previousVisibility = submenu.style.visibility;
+    const previousDisplay = submenu.style.display;
 
     submenu.style.visibility = "hidden";
     submenu.style.display = "block";
 
-    const rect = submenu.getBoundingClientRect();
-    const viewportWidth = window.innerWidth;
+    const parentRect = el.getBoundingClientRect();
+    const submenuRect = submenu.getBoundingClientRect();
+    const viewportWidth = document.documentElement.clientWidth;
+    const gap = 8;
 
-    if (rect.right > viewportWidth) {
-      el.classList.add("open-left");
-    } else {
-      el.classList.remove("open-left");
-    }
+    const spaceRight = viewportWidth - parentRect.right;
+    const spaceLeft = parentRect.left;
 
-    submenu.style.display = "";
-    submenu.style.visibility = "";
+    const submenuWidth = submenuRect.width;
+
+    // Open left when the submenu cannot fit on the right
+    // and there is more usable space on the left.
+    const openLeft =
+      spaceRight < submenuWidth + gap &&
+      spaceLeft > spaceRight;
+
+    el.classList.toggle("open-left", openLeft);
+
+    // Restore the previous inline styles.
+    submenu.style.visibility = previousVisibility;
+    submenu.style.display = previousDisplay;
   };
 
+
+  private handleMainDropdownLayout = (
+    e: React.MouseEvent<HTMLElement>
+  ): void => {
+    const dropdown = e.currentTarget as HTMLElement;
+    const menu = dropdown.querySelector(
+      ":scope > .dropdown-menu"
+    ) as HTMLElement | null;
+
+    if (!menu) return;
+
+    // Display a maximum of 10 items per column.
+    menu.style.setProperty("--menu-rows", "10");
+  };
+
+
+
+  private handleDocumentClick = (event: MouseEvent): void => {
+    const target = event.target as HTMLElement;
+
+    if (target.closest(`.${styles.chevron}`)) {
+      return;
+    }
+
+    if (target.closest(".quickLinksMenus .dropdown-toggle")) {
+      return;
+    }
+
+    if (target.closest(".quickLinksMenus .dropdown-menu")) {
+      return;
+    }
+
+    this.setState({
+      openDropdownId: null,
+      showOverflowMenus: false
+    });
+  };
+
+
+
+
+  private isRightAlignedMenu = (menuId: number): boolean => {
+    const menus = this.getTopLevelMenus();
+    const lastFourIds = new Set(
+      menus.slice(-4).map(menu => menu.Id)
+    );
+
+    return lastFourIds.has(menuId);
+  };
 
 
 
@@ -913,7 +1123,7 @@ export default class EntityHome extends React.Component<
                   {this.state.visibleMenus.map((main, index) => {
 
                     const children = this.getChildMenus(main.Id);
-                    const isLastMenu = index === this.state.visibleMenus.length - 1;
+
 
                     if (children.length === 0) {
                       return (
@@ -930,16 +1140,24 @@ export default class EntityHome extends React.Component<
                       );
                     }
 
+
                     return (
                       <NavDropdown
                         key={main.Id}
                         title={main.Title}
                         id={`nav-dropdown-${main.Id}`}
-                        className={`${styles.menuItem} ${isLastMenu ? styles.lastDropdown : ""}`}
+                        show={this.state.openDropdownId === main.Id}
+                        onToggle={(isOpen) =>
+                          this.handleParentDropdownToggle(main.Id, isOpen)
+                        }
+                        className={`${styles.menuItem} ${styles.multiColumnDropdown} ${this.isRightAlignedMenu(main.Id) ? styles.lastDropdown : ""
+                          }`}
+                        onMouseEnter={this.handleMainDropdownLayout}
                       >
                         {this.renderSubMenus(main.Id)}
                       </NavDropdown>
                     );
+
 
                   })}
 
@@ -995,7 +1213,13 @@ export default class EntityHome extends React.Component<
                           key={main.Id}
                           title={main.Title}
                           id={`overflow-nav-${main.Id}`}
-                          className={styles.menuItem}
+                          show={this.state.openDropdownId === main.Id}
+                          onToggle={(isOpen) =>
+                            this.handleParentDropdownToggle(main.Id, isOpen)
+                          }
+                          className={`${styles.menuItem} ${styles.multiColumnDropdown} ${this.isRightAlignedMenu(main.Id) ? styles.lastDropdown : ""
+                            }`}
+                          onMouseEnter={this.handleMainDropdownLayout}
                         >
                           {this.renderSubMenus(main.Id)}
                         </NavDropdown>

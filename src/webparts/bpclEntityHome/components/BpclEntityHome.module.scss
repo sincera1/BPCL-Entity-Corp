@@ -621,6 +621,139 @@ Container .row {
 
 
 
+/* =========================================
+   DYNAMIC MULTI-COLUMN NAVIGATION
+   ========================================= */
+
+
+
+@media (min-width: 1025px) {
+
+  /* =========================================
+     MAIN MULTI-COLUMN DROPDOWN
+     ========================================= */
+
+  .multiColumnDropdown {
+    position: relative;
+  }
+
+  .multiColumnDropdown> :global(.dropdown-menu) {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: auto;
+
+    /* Hidden by default; opens through React-Bootstrap */
+    display: none;
+
+    /* Display 10 direct items per column */
+    grid-auto-flow: column;
+    grid-template-rows: repeat(10, max-content);
+    grid-auto-columns: minmax(220px, max-content);
+
+    width: max-content;
+    max-width: calc(100vw - 24px);
+
+    max-height: none !important;
+    overflow: visible !important;
+    padding: 0;
+
+    align-items: start;
+    box-sizing: border-box;
+    z-index: 1050;
+  }
+
+  /* Open when React-Bootstrap adds .show to the menu */
+  .multiColumnDropdown> :global(.dropdown-menu.show),
+  .multiColumnDropdown.show> :global(.dropdown-menu) {
+    display: grid !important;
+  }
+
+  /* =========================================
+     LAST FOUR PARENT MENUS
+     Align the main dropdown to the right
+     ========================================= */
+
+  .multiColumnDropdown.lastDropdown> :global(.dropdown-menu) {
+    left: auto !important;
+    right: 0 !important;
+  }
+
+  /* =========================================
+     MAIN DROPDOWN ITEMS
+     ========================================= */
+
+  .multiColumnDropdown> :global(.dropdown-menu)> :global(.dropdown-submenu) {
+    position: relative;
+    min-width: 220px;
+    white-space: nowrap;
+  }
+
+  /* Allow long labels to wrap */
+  .multiColumnDropdown> :global(.dropdown-menu)> :global(.dropdown-submenu)> :global(.dropdown-item) {
+    white-space: normal;
+  }
+
+  /* =========================================
+     NESTED SUBMENUS: FLYOUT PANELS
+     ========================================= */
+
+  .multiColumnDropdown> :global(.dropdown-menu)> :global(.dropdown-submenu)> :global(.dropdown-menu) {
+    display: none;
+
+    position: absolute;
+    top: 0;
+    left: 100%;
+    right: auto;
+
+    /* Prevent the main grid layout from affecting flyouts */
+    grid-template-rows: none;
+    grid-auto-flow: row;
+    grid-auto-columns: auto;
+
+    width: max-content;
+    min-width: 220px;
+    max-width: calc(100vw - 24px);
+
+    max-height: none !important;
+    overflow: visible !important;
+
+    box-sizing: border-box;
+    z-index: 10000;
+  }
+
+  /* Show nested flyouts only when the parent dropdown is open */
+  .multiColumnDropdown> :global(.dropdown-menu.show)> :global(.dropdown-submenu.has-children:hover)> :global(.dropdown-menu),
+  .multiColumnDropdown.show> :global(.dropdown-menu)> :global(.dropdown-submenu.has-children:hover)> :global(.dropdown-menu) {
+    display: block;
+  }
+
+  /* =========================================
+     LAST FOUR PARENT MENUS
+     Open nested flyouts towards the left
+     ========================================= */
+
+  .multiColumnDropdown.lastDropdown :global(.dropdown-submenu.has-children > .dropdown-menu) {
+    left: auto !important;
+    right: 100% !important;
+  }
+
+  /* =========================================
+     JAVASCRIPT-CALCULATED SUBMENU POSITION
+     ========================================= */
+
+  :global(.dropdown-submenu.open-left > .dropdown-menu) {
+    left: auto !important;
+    right: 100% !important;
+  }
+}
+
+
+
+
+
+
+
 /* WELCOME BANNER ------------Pournami----------- */
 
 
@@ -1777,7 +1910,7 @@ Container .row {
 
 /* Laptop */
 @media (max-width: 1200px) {
-  
+
 
   .marqueeTrack {
     animation-duration: 140s;
@@ -1786,7 +1919,7 @@ Container .row {
 
 /* Tablet */
 @media (max-width: 992px) {
-  
+
 
   .marqueeTrack {
     animation-duration: 140s;
@@ -1795,7 +1928,7 @@ Container .row {
 
 /* Mobile */
 @media (max-width: 576px) {
-  
+
 
   .marqueeTrack {
     animation-duration: 100s;
