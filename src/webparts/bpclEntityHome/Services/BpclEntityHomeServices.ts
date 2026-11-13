@@ -346,9 +346,6 @@ export default class BpclEntityHomeServices {
 
     public async getDirectorCorner(): Promise<IDirectorCornerItem[]> {
 
-        
-
-
             const items = await this.sp.web.lists
                 .getByTitle("Entity_DirectorCorner")
                 .items
