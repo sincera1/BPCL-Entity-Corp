@@ -39,30 +39,30 @@ const StaffPostingModal: React.FC<IProps> = ({
       setSbuOptions(data.sbuOptions);
 
       // ✅ Default select StartIndex = 1 (or smallest available)
-   if (data.sbuOptions?.length > 0) {
+      if (data.sbuOptions?.length > 0) {
 
-          // Check if "Office Note" exists
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const officeNote = data.sbuOptions.find(
-            (x: any) =>
-              x.SBU?.TeamName?.toLowerCase() === "office note"
+        // Check if "Office Note" exists
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const officeNote = data.sbuOptions.find(
+          (x: any) =>
+            x.SBU?.TeamName?.toLowerCase() === "office note"
+        );
+
+        if (officeNote) {
+          // ✅ If Office Note exists → set as default
+          setSelectedIndex(officeNote.StartIndex?.toString());
+        } else {
+          // ✅ Otherwise fallback to smallest StartIndex
+          const sorted = [...data.sbuOptions].sort(
+            (a, b) => Number(a.StartIndex) - Number(b.StartIndex)
           );
 
-          if (officeNote) {
-            // ✅ If Office Note exists → set as default
-            setSelectedIndex(officeNote.StartIndex?.toString());
-          } else {
-            // ✅ Otherwise fallback to smallest StartIndex
-            const sorted = [...data.sbuOptions].sort(
-              (a, b) => Number(a.StartIndex) - Number(b.StartIndex)
-            );
-
-            setSelectedIndex(sorted[0].StartIndex?.toString());
-          }
-       } 
+          setSelectedIndex(sorted[0].StartIndex?.toString());
+        }
+      }
     };
 
-   loadData().catch((error) => {
+    loadData().catch((error) => {
       console.error("Something went wrong. Please contact administrator.");
     });
   }, [itemId]);
@@ -71,47 +71,38 @@ const StaffPostingModal: React.FC<IProps> = ({
      REORDER IMAGES BASED ON SELECTED INDEX
   ============================ */
 
-const orderedImages = useMemo(() => {
-  if (!selectedIndex) return images;
+  const orderedImages = useMemo(() => {
+    if (!selectedIndex) return images;
 
-  const isMatching = (fileName: string): boolean => {
-    const name = (fileName || "").toLowerCase();
+    const isMatching = (fileName: string): boolean => {
+      const name = (fileName || "").toLowerCase();
 
-    if (!name.startsWith(selectedIndex)) return false;
+      if (!name.startsWith(selectedIndex)) return false;
 
-    const nextChar = name.charAt(selectedIndex.length);
+      const nextChar = name.charAt(selectedIndex.length);
 
-    // Allow:
-    // 1.jpg
-    // 1.1.jpg
-    // 1.11.jpg
-    // 1_1.jpg
-    // 1-1.jpg
-    // BUT NOT:
-    // 11.jpg
-    // 111.jpg
 
-    return (
-      nextChar === "" ||
-      nextChar === "." ||
-      nextChar === "_" ||
-      nextChar === "-"
+      return (
+        nextChar === "" ||
+        nextChar === "." ||
+        nextChar === "_" ||
+        nextChar === "-"
+      );
+    };
+
+    const matching = images.filter((file: any) =>
+      isMatching(file.Name)
     );
-  };
 
-  const matching = images.filter((file: any) =>
-    isMatching(file.Name)
-  );
+    const others = images.filter((file: any) =>
+      !isMatching(file.Name)
+    );
 
-  const others = images.filter((file: any) =>
-    !isMatching(file.Name)
-  );
+    return [...matching, ...others];
 
-  return [...matching, ...others];
-
-}, [images, selectedIndex]);
+  }, [images, selectedIndex]);
   return (
-    <Modal show={show} onHide={onClose} size="xl" centered>
+    <Modal show={show} onHide={onClose} size="lg" centered style={{ zIndex: 9999 }}>
       <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
@@ -140,27 +131,27 @@ const orderedImages = useMemo(() => {
             </div>
           ) : (
             //<Carousel interval={2000} controls indicators pause="hover" className={styles.modalCarousel}>
-              <Carousel 
-          className={styles.modalCarousel}
-            interval={2000}
-            controls
-            indicators={false}
-            pause="hover"
-            nextIcon={
-              <span
-                aria-hidden="true"
-                className="carousel-control-next-icon"
-                style={{ filter: "invert(1)" }}
-              />
-            }
-            prevIcon={
-              <span
-                aria-hidden="true"
-                className="carousel-control-prev-icon"
-                style={{ filter: "invert(1)" }}
-              />
-            }
-          >
+            <Carousel
+              className={styles.modalCarousel}
+              interval={2000}
+              controls
+              indicators={false}
+              pause="hover"
+              nextIcon={
+                <span
+                  aria-hidden="true"
+                  className="carousel-control-next-icon"
+                  style={{ filter: "invert(1)" }}
+                />
+              }
+              prevIcon={
+                <span
+                  aria-hidden="true"
+                  className="carousel-control-prev-icon"
+                  style={{ filter: "invert(1)" }}
+                />
+              }
+            >
               {orderedImages.map((file: any, i: number) => {
                 const imgUrl =
                   file.ServerRelativeUrl ||
@@ -173,13 +164,17 @@ const orderedImages = useMemo(() => {
                       className="d-block w-100"
                       src={`${imgUrl}?t=${Date.now()}`}
                       alt={`Staff Posting ${i + 1}`}
+                      onClick={() =>
+                        window.open(imgUrl, "_blank", "noopener,noreferrer")
+                      }
                       style={{
                         //maxHeight: "360px",
-                        height:"auto",
+                        height: "auto",
                         width: "100%",
                         objectFit: "scale-down",
                         margin: "0 auto",
                         borderRadius: "8px",
+                        cursor: "pointer",
                       }}
                     />
                   </Carousel.Item>

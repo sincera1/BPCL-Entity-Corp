@@ -103,12 +103,16 @@ const PreviewNewsModal: React.FC<Props> = ({
                   className="d-block w-100"
                   src={img.url}
                   alt={item.Title || "News image"}
+                  onClick={() =>
+                    window.open(img.url, "_blank", "noopener,noreferrer")
+                  }
                   style={{
                     height: "auto",
                     width: "100%",
                     objectFit: "scale-down",
                     display: "block",
                     margin: "0 auto",
+                    cursor: "pointer",
                   }}
                 />
 
